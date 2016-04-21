@@ -11,12 +11,32 @@
     <meta http-equiv="pragma" content="no-cache" />
     <title>shootme</title>
 
-    <script src="node_modules/phaser/build/phaser.js"></script>
-    <script data-main="game/game.js" src="node_modules/requirejs/require.js"></script>
 </head>
 
 <body>
 
+
+
+    <script src="node_modules/phaser/build/phaser.js"></script>
+    <script src="node_modules/requirejs/require.js"></script>
+    <script src="game/boot.js"></script>
+    <script src="game/preloader.js"></script>
+    <script src="game/mainMenu.js"></script>
+    <script src="game/game.js"></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            //var game = new Phaser.Game("100%", "100%", Phaser.AUTO, '');
+            //var game = new Phaser.Game(640, 512, Phaser.AUTO, '');
+            var game = new Phaser.Game(1280, 1024, Phaser.AUTO, '');
+
+            game.state.add('Boot', Shootme.Boot);
+            game.state.add('Preloader', Shootme.Preloader);
+            game.state.add('MainMenu', Shootme.MainMenu);
+            game.state.add('Game', Shootme.Game);
+
+            game.state.start('Boot');
+        };
+    </script>
 </body>
 
 </html>

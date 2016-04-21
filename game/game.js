@@ -1,161 +1,161 @@
-define(["require", "exports"], function (require, exports) {
+Shootme.Game = function (game) {
 
-    var floor;
-    var buttons = {p1: [], p2: []};
+    this.buttons = {p1: [], p2: []};
 
-    var inputs = {p1: null, p2: null};
+    this.inputs = {p1: null, p2: null};
 
-    var points = {p1: 0, p2: 0};
+    this.lives = {p1: 5, p2: 5};
 
-    var time;
+    this.stoppageTime;
 
-    var enabledButton = -1;
+    this.enabledButton;
 
-    var game = new Phaser.Game(500, 400, Phaser.AUTO, '', {
-        preload: preload,
-        create: create,
-        update: update,
-        render: render
-    });
+    this.timeP1 = null;
+    this.timeP2 = null;
+};
 
-    function preload() {
-        game.load.spritesheet('floor_asset', 'assets/floor_grass.jpg');
-        game.load.spritesheet('button_asset', 'assets/button.png', 128, 128);
-        game.load.spritesheet('button-red_asset', 'assets/button-red.png', 128, 128);
-    }
+Shootme.Game.prototype = {
+    preload: function () {
 
-    function create() {
-        floor = game.add.sprite(0, 0, 'floor_asset');
-        console.log(buttons);
-        buttons.p1.push(game.add.sprite(0, 0, 'button_asset'));
-        buttons.p1.push(game.add.sprite(96, 64, 'button-red_asset'));
-        buttons.p1.push(game.add.sprite(0, 128, 'button_asset'));
+    },
+
+    create: function () {
+        var bg = this.add.image(0, 0, 'bg');
+
+        //bg.scale.setTo(0.5,0.5);
+
+        console.log(this.buttons);
+        this.buttons.p1.push(this.add.sprite(this.world.centerX-96, 64, 'btns-red'));
+        this.buttons.p1.push(this.add.sprite(this.world.centerX, 160, 'btns-red'));
+        this.buttons.p1.push(this.add.sprite(this.world.centerX+96, 64, 'btns-red'));
 
 
-        buttons.p2.push(game.add.sprite(384, 0, 'button_asset'));
-        buttons.p2.push(game.add.sprite(256, 64, 'button-red_asset'));
-        buttons.p2.push(game.add.sprite(384, 128, 'button_asset'));
+        this.buttons.p2.push(this.add.sprite(this.world.centerX-96, this.world.height-64, 'btns-blue'));
+        this.buttons.p2.push(this.add.sprite(this.world.centerX, this.world.height-160, 'btns-blue'));
+        this.buttons.p2.push(this.add.sprite(this.world.centerX+96, this.world.height-64, 'btns-blue'));
 
-        game.input.enabled = false;
-        inputs.p1 = [game.input.keyboard.addKey(Phaser.Keyboard.Q),
-            game.input.keyboard.addKey(Phaser.Keyboard.S),
-            game.input.keyboard.addKey(Phaser.Keyboard.Y)];
-        inputs.p2 = [game.input.keyboard.addKey(Phaser.Keyboard.I),
-            game.input.keyboard.addKey(Phaser.Keyboard.J),
-            game.input.keyboard.addKey(Phaser.Keyboard.M)];
+        this.input.enabled = false;
+        this.inputs.p1 = [this.input.keyboard.addKey(Phaser.Keyboard.Q),
+            this.input.keyboard.addKey(Phaser.Keyboard.S),
+            this.input.keyboard.addKey(Phaser.Keyboard.Y)];
+        this.inputs.p2 = [this.input.keyboard.addKey(Phaser.Keyboard.I),
+            this.input.keyboard.addKey(Phaser.Keyboard.J),
+            this.input.keyboard.addKey(Phaser.Keyboard.M)];
 
-        var tempInputs = inputs.p1.concat(inputs.p2);
-        var tempButtons = buttons.p1.concat(buttons.p2);
+        var tempInputs = this.inputs.p1.concat(this.inputs.p2);
+        var tempButtons = this.buttons.p1.concat(this.buttons.p2);
         for (var key in tempInputs) {
-            tempInputs[key].onDown.add(function (key) {
-
-                console.log(keyIndex++);
-                evaluateInput(key);
-            });
+            tempInputs[key].onDown.add(this.evaluateInput, this);
         }
         for (var nein in tempButtons) {
+            //tempButtons[nein].scale.setTo(0.5);
             tempButtons[nein].enabled = false;
         }
 
-        enableRandomButton();
+        this.enableRandomButton();
+    },
 
-    }
+    update: function () {
 
-    function enableRandomButton() {
-        game.time.events.add(Phaser.Timer.SECOND *
-            game.rnd.realInRange(1, 2), activateChallenge, this);
-    }
+    },
+    render: function (game) {
 
-    function activateChallenge() {
-        enabledButton = game.rnd.integerInRange(0, 2);
-        console.log("enable button " + enabledButton);
-        showAndEnableButtons(enabledButton);
-        time = game.time.now
-    }
+        game.debug.text('lives: ' + this.lives.p1 + ' : ' + this.lives.p2, 600, 600, 50);
+    },
 
-    function showAndEnableButtons(enabledButton) {
-        buttons.p1[enabledButton].frame = 1;
-        buttons.p2[enabledButton].frame = 1;
 
-        buttons.p1[enabledButton].enabled = true;
-        buttons.p2[enabledButton].enabled = true;
-        game.input.enabled = true;
-    }
+    enableRandomButton: function () {
+        this.time.events.add(Phaser.Timer.SECOND *
+            this.rnd.realInRange(1, 2), function () {
+            this.enabledButton = this.rnd.integerInRange(0, 2);
+            console.log("enable button " + this.enabledButton);
+            this.showAndEnableButtons();
+            this.stoppageTime = this.time.now
+        }, this);
+    },
 
-    var keyIndex = 0;
-    var timeP1 = null;
-    var timeP2 = null;
 
-    function evaluateInput(keyObj) {
+    showAndEnableButtons: function () {
+        this.buttons.p1[this.enabledButton].frame = 1;
+        this.buttons.p2[this.enabledButton].frame = 1;
 
-        if (inputs.p1.indexOf(keyObj) !== -1) {
-            if (inputs.p1.indexOf(keyObj) === enabledButton) {
-                timeP1 = game.time.now - time;
+        this.buttons.p1[this.enabledButton].enabled = true;
+        this.buttons.p2[this.enabledButton].enabled = true;
+        this.input.enabled = true;
+    },
+
+    evaluateInput: function (keyObj) {
+        if (this.inputs.p1.indexOf(keyObj) !== -1) {
+            if (this.inputs.p1.indexOf(keyObj) === this.enabledButton) {
+                timeP1 = this.time.now - this.stoppageTime;
 
             } else {
                 timeP1 = "wrong";
             }
-            buttons.p1[enabledButton].frame = 0;
-        } else if (inputs.p2.indexOf(keyObj) !== -1) {
-            if (inputs.p2.indexOf(keyObj) === enabledButton) {
-                timeP2 = game.time.now - time;
+            this.buttons.p1[this.enabledButton].frame = 0;
+        } else if (this.inputs.p2.indexOf(keyObj) !== -1) {
+            if (this.inputs.p2.indexOf(keyObj) === this.enabledButton) {
+                timeP2 = this.time.now - this.stoppageTime;
 
             } else {
                 timeP2 = "wrong";
             }
-            buttons.p2[enabledButton].frame = 0;
+            this.buttons.p2[this.enabledButton].frame = 0;
         }
         keyObj.isDown = false;
         console.log(timeP1 + " - " + timeP2);
         if (timeP1 && timeP2) {
             if (Number.isInteger(timeP1) && isNaN(timeP2) || timeP1 < timeP2) {
-                points.p1++;
+                this.lives.p1--;
             } else if (Number.isInteger(timeP2) && isNaN(timeP1) || timeP2 < timeP1) {
-                points.p2++;
+                this.lives.p2--;
             }
 
-            createScoreAnimation(game.world.centerX - 150, timeP1);
-            createScoreAnimation(game.world.centerX + 150, timeP2);
+            createScoreAnimation(this.world.centerX - 150, timeP1, this);
+            createScoreAnimation(this.world.centerX + 150, timeP2, this);
             timeP1 = 0;
             timeP2 = 0;
 
-            game.input.enabled = false;
-            enableRandomButton();
+            this.input.enabled = false;
+
+            if (this.lives.p1 === 0 || this.lives.p2 === 0 ) {
+                //show end screen
+
+                //add button / input click for proceeding
+
+                // go to state main menu
+                this.state.start('MainMenu');
+            }
+
+            this.enableRandomButton();
         }
     }
+};
 
-    function createScoreAnimation(x, message) {
-
-        var scoreFont = "45px Arial";
-
-        //Create a new label for the score
-        var scoreAnimation = game.add.text(x, game.world.centerY, message, {
-            font: scoreFont,
-            fill: "#39d179",
-            stroke: "#ffffff",
-            strokeThickness: 15
-        });
-        scoreAnimation.anchor.setTo(0.5, 0);
-        scoreAnimation.align = 'center';
-
-        //Tween this score label to the total score label
-        var scoreTween = game.add.tween(scoreAnimation).to({x: x, y: 400}, 800, Phaser.Easing.Exponential.In, true);
-
-        //When the animation finishes, destroy this score label, trigger the total score labels animation and add the score
-        scoreTween.onComplete.add(function () {
-            scoreAnimation.destroy();
-        }, game);
-    }
-
-    function update() {
-
-    }
+var timeP1;
+var timeP2;
 
 
-    function render() {
+function createScoreAnimation(x, message, game) {
 
-        game.debug.text('points: ' + points.p1 + ' : ' + points.p2, 200, 300);
-    }
+    var scoreFont = "45px Arial";
 
-})
-;
+    //Create a new label for the score
+    var scoreAnimation = game.add.text(x, game.world.centerY, message, {
+        font: scoreFont,
+        fill: "#39d179",
+        stroke: "#ffffff",
+        strokeThickness: 15
+    });
+    scoreAnimation.anchor.setTo(0.5, 0);
+    scoreAnimation.align = 'center';
+
+    //Tween this score label to the total score label
+    var scoreTween = game.add.tween(scoreAnimation).to({x: x, y: 400}, 800, Phaser.Easing.Exponential.In, true);
+
+    //When the animation finishes, destroy this score label, trigger the total score labels animation and add the score
+    scoreTween.onComplete.add(function () {
+        scoreAnimation.destroy();
+    }, game);
+}
+
