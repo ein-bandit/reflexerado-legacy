@@ -1,0 +1,15 @@
+{
+  "name": "shootme",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "kaufi",
+  "license": "ISC",
+  "dependencies": {
+    "phaser": "^2.4.6",
+    "requirejs": "^2.2.0"
+  }
+}
