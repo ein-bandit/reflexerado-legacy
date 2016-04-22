@@ -9,7 +9,6 @@
   "author": "kaufi",
   "license": "ISC",
   "dependencies": {
-    "phaser": "^2.4.6",
-    "requirejs": "^2.2.0"
+    "phaser": "^2.4.6"
   }
 }

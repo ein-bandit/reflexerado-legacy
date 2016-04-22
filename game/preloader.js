@@ -23,11 +23,11 @@ Shootme.Preloader.prototype = {
 
         this.load.spritesheet('p1_idle', 'assets/red_idle.png', 256, 256);
         this.load.spritesheet('p2_shoot', 'assets/red_shoot.png', 256, 256);
-        this.load.spritesheet('p1_animations', 'assets/red_animations.png', 256, 256);
+        this.load.spritesheet('p1_animations', 'assets/yellow_animations.png', 256, 256);
 
         this.load.spritesheet('p2_idle', 'assets/yellow_idle.png', 256, 256);
         this.load.spritesheet('p2_shoot', 'assets/yellow_shoot.png', 256, 256);
-        this.load.spritesheet('p2_animations', 'assets/yellow_animations.png', 256, 256);
+        this.load.spritesheet('p2_animations', 'assets/red_animations.png', 256, 256);
 
     },
 

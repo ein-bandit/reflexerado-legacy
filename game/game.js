@@ -27,22 +27,22 @@ Shootme.Game.prototype = {
     create: function () {
         var bg = this.add.image(0, 0, 'bg');
 
-        this.buttons.p1.push(this.add.sprite(this.world.centerX - 96, 52, 'btns-red'));
+        this.buttons.p1.push(this.add.sprite(this.world.centerX - 96, 52, 'btns-blue'));
         this.buttons.p1.push(this.add.sprite(this.world.centerX, 180, 'btns-red'));
-        this.buttons.p1.push(this.add.sprite(this.world.centerX + 96, 52, 'btns-red'));
+        this.buttons.p1.push(this.add.sprite(this.world.centerX + 96, 52, 'btns-blue'));
 
-        this.buttons.p2.push(this.add.sprite(this.world.centerX - 96, this.world.height - 96, 'btns-blue'));
-        this.buttons.p2.push(this.add.sprite(this.world.centerX, this.world.height - 256, 'btns-blue'));
-        this.buttons.p2.push(this.add.sprite(this.world.centerX + 96, this.world.height - 96, 'btns-blue'));
+        this.buttons.p2.push(this.add.sprite(this.world.centerX - 96, this.world.height - 136, 'btns-blue'));
+        this.buttons.p2.push(this.add.sprite(this.world.centerX, this.world.height - 264, 'btns-red'));
+        this.buttons.p2.push(this.add.sprite(this.world.centerX + 96, this.world.height - 136, 'btns-blue'));
 
 
         //put p1 sprite idle, add p1 sprite shoot
-        this.p1 = this.add.sprite(this.world.centerX - 96, 0, 'p1_animations');
+        this.p1 = this.add.sprite(this.world.centerX - 96, -24, 'p1_animations');
         this.p1.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
         this.p1.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, true);
         this.p1.animations.play('idle');
         //do same for p2
-        this.p2 = this.add.sprite(this.world.centerX - 96, this.world.height - 224, 'p2_animations');
+        this.p2 = this.add.sprite(this.world.centerX - 96, this.world.height - 264, 'p2_animations');
         this.p2.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
         this.p2.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, true);
         this.p2.animations.play('idle');
