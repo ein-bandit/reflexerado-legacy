@@ -17,18 +17,15 @@ Shootme.Preloader.prototype = {
 
         this.load.image('btn-play', 'assets/button_play.png');
 
-        this.load.spritesheet('btns-red', 'assets/buttons_red.png', 128,128);
-        this.load.spritesheet('btns-blue', 'assets/buttons_blue.png', 128,128);
+        this.load.spritesheet('btns-red', 'assets/buttons_red.png', 128, 128);
+        this.load.spritesheet('btns-blue', 'assets/buttons_blue.png', 128, 128);
         this.load.image('bg', 'assets/background.png');
 
-        this.load.spritesheet('p1_idle', 'assets/red_idle.png', 256, 256);
-        this.load.spritesheet('p2_shoot', 'assets/red_shoot.png', 256, 256);
         this.load.spritesheet('p1_animations', 'assets/yellow_animations.png', 256, 256);
 
-        this.load.spritesheet('p2_idle', 'assets/yellow_idle.png', 256, 256);
-        this.load.spritesheet('p2_shoot', 'assets/yellow_shoot.png', 256, 256);
         this.load.spritesheet('p2_animations', 'assets/red_animations.png', 256, 256);
 
+        this.load.image('heart', 'assets/heart.png');
     },
 
     create: function () {

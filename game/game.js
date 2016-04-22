@@ -4,7 +4,7 @@ Shootme.Game = function (game) {
 
     this.inputs = {p1: null, p2: null};
 
-    this.lives = {p1: 5, p2: 5};
+    this.lives = {p1: null, p2: null};
 
     this.stoppageTime;
 
@@ -65,6 +65,15 @@ Shootme.Game.prototype = {
             tempButtons[nein].enabled = false;
         }
 
+        this.lives.p1 = this.add.group();
+        this.lives.p2 = this.add.group();
+
+        for (var i = 0; i < 5; i++) {
+            this.lives.p1.create(20 + 40 * i, 0, 'heart');
+            this.lives.p2.create(20 + 40 * i, this.world.height - 100, 'heart');
+        }
+
+
         this.enableRandomButton();
     },
 
@@ -76,7 +85,7 @@ Shootme.Game.prototype = {
         if (this.gameScore) {
             this.gameScore.destroy();
         }
-        this.gameScore = this.add.text(550, 500, 'lives: ' + this.lives.p1 + ' : ' + this.lives.p2, {font: '36pt Arial'});
+        this.gameScore = this.add.text(550, 500, 'lives: ' + this.lives.p1.length + ' : ' + this.lives.p2.length, {font: '36pt Arial'});
     },
 
 
@@ -146,22 +155,29 @@ Shootme.Game.prototype = {
         if (timeP1 && timeP2) {
             if (Number.isInteger(timeP1) && isNaN(timeP2) || timeP1 < timeP2) {
                 //p1 shoot ani start
-                this.p1.animations.stop();
-                var shoot = this.p1.animations.play('shoot', 10, false);
-                shoot.onComplete.add(function () {
-                    this.p1.animations.stop();
-                    this.p1.animations.play('idle');
-                }, this);
-                this.lives.p1--;
+                this.lives.p1.getAt(0).destroy();
+                var p1_anim = this.p1.animations;
+                this.time.events.add(Phaser.Timer.SECOND * 1.5, function () {
+                    p1_anim.stop();
+                    var shoot = p1_anim.play('shoot', 10, false);
+                    shoot.onComplete.add(function () {
+                        p1_anim.stop();
+                        p1_anim.play('idle');
+                    }, this);
+                });
             } else if (Number.isInteger(timeP2) && isNaN(timeP1) || timeP2 < timeP1) {
                 //p2 shoot ani start
-                this.lives.p2--;
-                this.p2.animations.stop();
-                var shoot = this.p2.animations.play('shoot', 10, false);
-                shoot.onComplete.add(function () {
-                    this.p2.animations.stop();
-                    this.p2.animations.play('idle');
-                }, this);
+                this.lives.p2.getAt(0).destroy();
+                var p2_anim = this.p2.animations;
+                this.time.events.add(Phaser.Timer.SECOND * 1.5, function () {
+                    p2_anim.stop();
+
+                    var shoot = p2_anim.play('shoot', 10, false);
+                    shoot.onComplete.add(function () {
+                        p2_anim.stop();
+                        p2_anim.play('idle');
+                    }, this);
+                });
             }
 
             this.buttons.p1[this.enabledButton].frame = 0;
@@ -174,13 +190,17 @@ Shootme.Game.prototype = {
 
             this.input.enabled = false;
 
-            if (this.lives.p1 === 0 || this.lives.p2 === 0) {
+            if (this.lives.p1.length === 0 || this.lives.p2.length === 0) {
                 //show end screen
 
                 //add button / input click for proceeding
 
                 // go to state main menu
                 createScoreAnimation(this.world.centerX, "game ended! press any button", this);
+                this.p1.animations.stop();
+                this.p2.animations.stop();
+                this.gameScore.destroy();
+                this.add.text(550, 500, "end, press any key to exit");
 
                 this.input.onDown.add(function () {
                     this.state.start('MainMenu');
