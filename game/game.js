@@ -10,6 +10,7 @@ Shootme.Game = function (game) {
 
     this.lifes;
     this.maxlifes;
+    this.heart;
 
     this.stoppageTime;
 
@@ -63,7 +64,7 @@ Shootme.Game.prototype = {
     create: function () {
 
         if (debug === true) {
-            this.maxlifes = 1;
+            this.maxlifes = 2;
         }
 
 
@@ -84,6 +85,8 @@ Shootme.Game.prototype = {
 
         //heart animation
         //to be done
+        this.heart = this.add.sprite(0,0, 'heart_animation');
+        this.heart.animations.add('kill', Phaser.ArrayUtils.numberArray(0,3), 5, false);
 
         //controls
         this.buttons.p1.push(this.add.sprite(this.world.centerX - 96, 82, 'btns-blue'));
@@ -244,20 +247,27 @@ Shootme.Game.prototype = {
             this.views[winner].animations.play('shoot');
             this.time.events.add(Phaser.Timer.SECOND * 0.8, function () {
                 this.views[loser].animations.play('hit').onComplete.add(function () {
-                    this.views[loser].animations.stop();
+                    //this.views[loser].animations.stop();
                     if (this.lifes[loser].children.length > 1) {
-
-                        //delete a heart
-                        this.lifes[loser].getAt(0).destroy();
+                        this.loseLife(this.lifes[loser].getAt(0));
                         this.startNewRound = true;
                     } else {
-                        this.lifes[loser].destroy();
+                        this.loseLife(this.lifes[loser]);
                         this.finishGame();
                     }
                 }, this);
             }, this);
         }, this);
 
+    },
+
+    loseLife: function(heart) {
+        var pos = heart.position;
+        heart.destroy();
+
+        this.heart.position.x = pos.x;
+        this.heart.position.y = pos.y;
+        this.heart.animations.play('kill');
     },
 
     resetRoundParameters: function () {
