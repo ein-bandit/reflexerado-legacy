@@ -1,4 +1,4 @@
-var debug = true;
+var debug = false;
 
 Shootme.Game = function (game) {
 
@@ -41,8 +41,8 @@ Shootme.Game.prototype = {
         this.lifes = {p1: [], p2: []};
         this.maxlifes = 5;
         this.gameScore = "";
-        this.minRoundTime = 3;
-        this.maxRoundTime = 4;
+        this.minRoundTime = 5;
+        this.maxRoundTime = 10;
         this.views = {
             p1: null,
             p2: null
@@ -65,6 +65,9 @@ Shootme.Game.prototype = {
 
         if (debug === true) {
             this.maxlifes = 2;
+
+            this.minRoundTime = 2;
+            this.maxRoundTime = 3;
         }
 
 
@@ -180,6 +183,7 @@ Shootme.Game.prototype = {
             this.rnd.realInRange(this.minRoundTime, this.maxRoundTime), function () {
             this.enabledButtonIndex = this.rnd.integerInRange(0, 2);
             if (debug === true) {
+                this.enabledButtonIndex = 1;
                 console.log("enable button " + this.enabledButtonIndex);
             }
             this.showAndEnableButtons();
