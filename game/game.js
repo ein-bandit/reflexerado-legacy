@@ -1,6 +1,6 @@
-var debug = false;
+var debug = true;
 
-Shootme.Game = function (game) {
+Reflexerado.Game = function (game) {
 
     this.startNewRound;
 
@@ -30,7 +30,7 @@ Shootme.Game = function (game) {
 };
 
 var keycounter = 0;
-Shootme.Game.prototype = {
+Reflexerado.Game.prototype = {
 
     init: function (data) {
         this.input.enabled = false;
@@ -76,7 +76,7 @@ Shootme.Game.prototype = {
         var bg = this.add.image(0, 0, 'bg');
 
         //player animations
-        this.views.p1 = this.add.sprite(this.world.centerX - 96, 16, 'p1_animations');
+        this.views.p1 = this.add.sprite(this.world.centerX - 96, 96, 'p1_animations');
         this.views.p1.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
         this.views.p1.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, false);
         this.views.p1.animations.add('hit', Phaser.ArrayUtils.numberArray(22, 26), 10, false);
@@ -89,10 +89,12 @@ Shootme.Game.prototype = {
         //heart animation
         this.heart = this.add.sprite(0, 0, 'heart_animation');
         this.heart.animations.add('kill', Phaser.ArrayUtils.numberArray(0, 3), 5, false);
+        this.heart.visible = false;
 
         //bullet
         this.bullet = this.add.image(0, 0, 'bullet');
         this.bullet.scale.setTo(0.5, 0.65);
+        this.bullet.anchor.setTo(0.5, 0.5);
         this.bullet.visible = false;
 
         //controls
@@ -281,7 +283,7 @@ Shootme.Game.prototype = {
         var posEnd = this.views[loser].position;
 
         this.bullet.position.x = pos.x + this.views[winner].width / 2;
-        this.bullet.position.y = pos.y;
+        this.bullet.position.y = pos.y + this.views[winner].height / 3; // workaround for correct bullet starting point.
         this.bullet.visible = true;
         this.add.tween(this.bullet).to(
             {
@@ -298,7 +300,10 @@ Shootme.Game.prototype = {
 
         this.heart.position.x = pos.x;
         this.heart.position.y = pos.y;
-        this.heart.animations.play('kill');
+        this.heart.visible = true;
+        this.heart.animations.play('kill').onComplete.add(function() {
+            this.heart.visible = false;
+        }, this);
     },
 
     resetRoundParameters: function () {

@@ -1,9 +1,9 @@
-Shootme = {};
+Reflexerado = {};
 
-Shootme.Boot = function (game) {
+Reflexerado.Boot = function (game) {
 };
 
-Shootme.Boot.prototype = {
+Reflexerado.Boot.prototype = {
 
     preload: function () {
 

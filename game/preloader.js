@@ -1,4 +1,4 @@
-Shootme.Preloader = function (game) {
+Reflexerado.Preloader = function (game) {
 
     this.background = null;
     this.preloadBar = null;
@@ -7,7 +7,7 @@ Shootme.Preloader = function (game) {
 
 };
 
-Shootme.Preloader.prototype = {
+Reflexerado.Preloader.prototype = {
 
     preload: function () {
 

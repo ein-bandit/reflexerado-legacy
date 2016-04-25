@@ -1,4 +1,4 @@
-Shootme.MainMenu = function (game) {
+Reflexerado.MainMenu = function (game) {
 
     this.music = null;
     this.playButton = null;
@@ -22,7 +22,7 @@ Shootme.MainMenu = function (game) {
 
 };
 
-Shootme.MainMenu.prototype = {
+Reflexerado.MainMenu.prototype = {
 
     create: function () {
 
