@@ -1,59 +1,107 @@
+var debug = true;
+
 Shootme.Game = function (game) {
 
-    this.buttons = {p1: [], p2: []};
+    this.startNewRound;
 
-    this.inputs = {p1: null, p2: null};
+    this.buttons;
 
-    this.lives = {p1: null, p2: null};
+    this.inputs;
+
+    this.lifes;
+    this.maxlifes;
 
     this.stoppageTime;
 
-    this.enabledButton;
+    this.enabledButtonIndex;
 
-    this.gameScore = "";
+    this.gameScore;
 
-    this.minTime = 3;
-    this.maxTime = 4;
+    this.minRoundTime;
+    this.maxRoundTime;
 
-    this.timeP1 = null;
-    this.timeP2 = null;
+    this.views;
+
+    this.round;
+
+    this.playerOneLocked;
+    this.playerTwoLocked;
 };
 
+var keycounter = 0;
 Shootme.Game.prototype = {
-    preload: function () {
 
+    init: function (data) {
+        this.input.enabled = false;
+        this.controls = data.controls;
+        this.startNewRound = false;
+        this.buttons = {p1: [], p2: []};
+        this.inputs = {p1: [], p2: []};
+        this.lifes = {p1: [], p2: []};
+        this.maxlifes = 5;
+        this.gameScore = "";
+        this.minRoundTime = 3;
+        this.maxRoundTime = 4;
+        this.views = {
+            p1: null,
+            p2: null
+        };
+        this.round = {
+            p1: {
+                done: false,
+                time: Number.MAX_VALUE
+            },
+            p2: {
+                done: false,
+                time: Number.MAX_VALUE
+            }
+        };
+        this.playerOneLocked = false;
+        this.playerTwoLocked = false;
     },
 
     create: function () {
+
+        if (debug === true) {
+            this.maxlifes = 1;
+        }
+
+
+        //be aware. anything here is called twice!!
+
         var bg = this.add.image(0, 0, 'bg');
 
-        this.buttons.p1.push(this.add.sprite(this.world.centerX - 96, 52, 'btns-blue'));
-        this.buttons.p1.push(this.add.sprite(this.world.centerX, 180, 'btns-red'));
-        this.buttons.p1.push(this.add.sprite(this.world.centerX + 96, 52, 'btns-blue'));
+        //player animations
+        this.views.p1 = this.add.sprite(this.world.centerX - 96, 16, 'p1_animations');
+        this.views.p1.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
+        this.views.p1.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, false);
+        this.views.p1.animations.add('hit', Phaser.ArrayUtils.numberArray(22, 26), 10, false);
 
-        this.buttons.p2.push(this.add.sprite(this.world.centerX - 96, this.world.height - 136, 'btns-blue'));
-        this.buttons.p2.push(this.add.sprite(this.world.centerX, this.world.height - 264, 'btns-red'));
-        this.buttons.p2.push(this.add.sprite(this.world.centerX + 96, this.world.height - 136, 'btns-blue'));
+        this.views.p2 = this.add.sprite(this.world.centerX - 96, this.world.height - 274, 'p2_animations');
+        this.views.p2.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
+        this.views.p2.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, false);
+        this.views.p2.animations.add('hit', Phaser.ArrayUtils.numberArray(22, 26), 10, false);
 
+        //heart animation
+        //to be done
 
-        //put p1 sprite idle, add p1 sprite shoot
-        this.p1 = this.add.sprite(this.world.centerX - 96, -24, 'p1_animations');
-        this.p1.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
-        this.p1.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, true);
-        this.p1.animations.play('idle');
-        //do same for p2
-        this.p2 = this.add.sprite(this.world.centerX - 96, this.world.height - 264, 'p2_animations');
-        this.p2.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
-        this.p2.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, true);
-        this.p2.animations.play('idle');
+        //controls
+        this.buttons.p1.push(this.add.sprite(this.world.centerX - 96, 82, 'btns-blue'));
+        this.buttons.p1.push(this.add.sprite(this.world.centerX, 210, 'btns-red'));
+        this.buttons.p1.push(this.add.sprite(this.world.centerX + 96, 82, 'btns-blue'));
 
-        this.input.enabled = false;
-        this.inputs.p1 = [this.input.keyboard.addKey(Phaser.Keyboard.Q),
-            this.input.keyboard.addKey(Phaser.Keyboard.S),
-            this.input.keyboard.addKey(Phaser.Keyboard.Y)];
-        this.inputs.p2 = [this.input.keyboard.addKey(Phaser.Keyboard.I),
-            this.input.keyboard.addKey(Phaser.Keyboard.J),
-            this.input.keyboard.addKey(Phaser.Keyboard.M)];
+        console.log(this.buttons.p1.length);
+
+        this.buttons.p2.push(this.add.sprite(this.world.centerX - 96, this.world.height - 146, 'btns-blue'));
+        this.buttons.p2.push(this.add.sprite(this.world.centerX, this.world.height - 274, 'btns-red'));
+        this.buttons.p2.push(this.add.sprite(this.world.centerX + 96, this.world.height - 146, 'btns-blue'));
+
+        this.inputs.p1 = [this.input.keyboard.addKey(this.controls.p1.left),
+            this.input.keyboard.addKey(this.controls.p1.center),
+            this.input.keyboard.addKey(this.controls.p1.right)];
+        this.inputs.p2 = [this.input.keyboard.addKey(this.controls.p2.left),
+            this.input.keyboard.addKey(this.controls.p2.center),
+            this.input.keyboard.addKey(this.controls.p2.right)];
 
         var tempInputs = this.inputs.p1.concat(this.inputs.p2);
         var tempButtons = this.buttons.p1.concat(this.buttons.p2);
@@ -65,178 +113,236 @@ Shootme.Game.prototype = {
             tempButtons[nein].enabled = false;
         }
 
-        this.lives.p1 = this.add.group();
-        this.lives.p2 = this.add.group();
 
-        for (var i = 0; i < 5; i++) {
-            this.lives.p1.create(20 + 40 * i, 0, 'heart');
-            this.lives.p2.create(20 + 40 * i, this.world.height - 100, 'heart');
+        //init hearts
+        this.lifes.p1 = this.add.group();
+        this.lifes.p2 = this.add.group();
+
+        for (var i = 0; i < this.maxlifes; i++) {
+            this.lifes.p1.create(this.world.width / 2 - 60 + 40 * i, 30, 'heart');
+            this.lifes.p2.create(this.world.width / 2 - 60 + 40 * i, this.world.height - 60, 'heart');
         }
 
+        // start game logic
+        this.startNewRound = true;
 
-        this.enableRandomButton();
     },
 
     update: function () {
+        if (this.round.p1.done === true && this.round.p2.done === true) {
+            if (debug === true)
+                console.log("got result");
+            this.input.enabled = false;
+            if (this.round.p1.time < this.round.p2.time) {
+                this.calcRound("p1", "p2");
+            } else if (this.round.p1.time > this.round.p2.time) {
+                this.calcRound("p2", "p1");
+            } else {
+                //show two misses.
+                this.createScoreAnimations(this.round.p1.time, this.round.p2.time, "none", "none");
+                this.time.events.add(Phaser.Timer.SECOND * 1.5, function () {
+                    this.startNewRound = true;
+                }, this);
+            }
 
+            //reset round parameters
+            this.resetRoundParameters();
+        }
+
+        if (this.startNewRound === true) {
+            this.startNewRound = false;
+            this.startRound();
+        }
     },
 
     render: function () {
-        if (this.gameScore) {
-            this.gameScore.destroy();
+        if (debug === true) {
+            if (this.gameScore) {
+                this.gameScore.destroy();
+            }
+            this.gameScore = this.add.text(550, 500, 'lifes: ' + this.lifes.p1.length + ' : ' + this.lifes.p2.length, {font: '36pt Arial'});
         }
-        this.gameScore = this.add.text(550, 500, 'lives: ' + this.lives.p1.length + ' : ' + this.lives.p2.length, {font: '36pt Arial'});
     },
 
+    startRound: function () {
 
-    enableRandomButton: function () {
+        this.views.p1.animations.play('idle');
+        this.views.p2.animations.play('idle');
+
         this.time.events.add(Phaser.Timer.SECOND *
-            this.rnd.realInRange(this.minTime, this.maxTime), function () {
-            this.enabledButton = this.rnd.integerInRange(0, 2);
-            console.log("enable button " + this.enabledButton);
+            this.rnd.realInRange(this.minRoundTime, this.maxRoundTime), function () {
+            this.enabledButtonIndex = this.rnd.integerInRange(0, 2);
+            if (debug === true) {
+                console.log("enable button " + this.enabledButtonIndex);
+            }
             this.showAndEnableButtons();
-            this.stoppageTime = this.time.now
+            this.stoppageTime = this.time.now;
+            this.input.enabled = true;
         }, this);
     },
 
 
     showAndEnableButtons: function () {
-        this.buttons.p1[this.enabledButton].frame = 1;
-        this.buttons.p2[this.enabledButton].frame = 1;
+        this.buttons.p1[this.enabledButtonIndex].frame = 1;
+        this.buttons.p2[this.enabledButtonIndex].frame = 1;
 
-        this.buttons.p1[this.enabledButton].enabled = true;
-        this.buttons.p2[this.enabledButton].enabled = true;
-        this.input.enabled = true;
+        this.buttons.p1[this.enabledButtonIndex].enabled = true;
+        this.buttons.p2[this.enabledButtonIndex].enabled = true;
     },
 
+
+    //is called after every keypress of a player
+
     evaluateInput: function (keyObj) {
+        if (debug === true)
+            console.log("evaluationg keys " + keycounter++);
         var p1_key = this.inputs.p1.indexOf(keyObj);
         var p2_key = this.inputs.p2.indexOf(keyObj);
-        if (p1_key !== -1) {
-            if (timeP1 > 0 || timeP1 === "wrong") {
-                return;
-            }
-            if (p1_key === this.enabledButton) {
 
-                timeP1 = this.time.now - this.stoppageTime;
+        if (p1_key > -1 && !this.playerOneLocked) {
+            if (debug === true)
+                console.log("p1 not locked and in");
+            this.playerOneLocked = true;
+            this.evaluateKeyPress(p1_key, "p1");
 
-            } else {
-                timeP1 = "wrong";
-                this.buttons.p1[this.enabledButton].frame = 0;
-            }
-            //set button pressed
-            this.buttons.p1[p1_key].frame = 2;
-            var buttons1 = this.buttons;
-            //set timer to reset button;
-            this.time.events.add(Phaser.Timer.SECOND / 2, function (game) {
-                buttons1.p1[p1_key].frame = 0;
-            });
-        } else if (p2_key !== -1) {
-            if (timeP2 > 0 || timeP2 === "wrong") {
-                return;
-            }
-            if (p2_key === this.enabledButton) {
-
-                timeP2 = this.time.now - this.stoppageTime;
-
-            } else {
-                timeP2 = "wrong";
-                this.buttons.p2[this.enabledButton].frame = 0;
-            }
-            this.buttons.p2[p2_key].frame = 2;
-
-            var buttons2 = this.buttons;
-            this.time.events.add(Phaser.Timer.SECOND / 2, function (game) {
-                buttons2.p2[p2_key].frame = 0;
-            });
+        } else if (p2_key > -1 && !this.playerTwoLocked) {
+            if (debug === true)
+                console.log("p2 not locked and in");
+            this.playerTwoLocked = true;
+            this.evaluateKeyPress(p2_key, "p2");
         }
-        keyObj.isDown = false;
-        console.log(timeP1 + " - " + timeP2);
-        if (timeP1 && timeP2) {
-            if (Number.isInteger(timeP1) && isNaN(timeP2) || timeP1 < timeP2) {
-                //p1 shoot ani start
-                this.lives.p1.getAt(0).destroy();
-                var p1_anim = this.p1.animations;
-                this.time.events.add(Phaser.Timer.SECOND * 1.5, function () {
-                    p1_anim.stop();
-                    var shoot = p1_anim.play('shoot', 10, false);
-                    shoot.onComplete.add(function () {
-                        p1_anim.stop();
-                        p1_anim.play('idle');
-                    }, this);
-                });
-            } else if (Number.isInteger(timeP2) && isNaN(timeP1) || timeP2 < timeP1) {
-                //p2 shoot ani start
-                this.lives.p2.getAt(0).destroy();
-                var p2_anim = this.p2.animations;
-                this.time.events.add(Phaser.Timer.SECOND * 1.5, function () {
-                    p2_anim.stop();
 
-                    var shoot = p2_anim.play('shoot', 10, false);
-                    shoot.onComplete.add(function () {
-                        p2_anim.stop();
-                        p2_anim.play('idle');
-                    }, this);
-                });
-            }
+    },
 
-            this.buttons.p1[this.enabledButton].frame = 0;
-            this.buttons.p2[this.enabledButton].frame = 0;
+    evaluateKeyPress: function (keyIndex, player) {
+        this.round[player].done = true;
+        this.round[player].time =
+            (keyIndex === this.enabledButtonIndex ? this.time.now - this.stoppageTime : Number.MAX_VALUE);
 
-            createScoreAnimation(this.world.centerX - 150, timeP1, this);
-            createScoreAnimation(this.world.centerX + 150, timeP2, this);
-            timeP1 = 0;
-            timeP2 = 0;
+        //reset enabled button
+        this.buttons[player][this.enabledButtonIndex].frame = 0;
 
-            this.input.enabled = false;
+        //show button pressed view.
+        this.buttons[player][keyIndex].frame = 2;
 
-            if (this.lives.p1.length === 0 || this.lives.p2.length === 0) {
-                //show end screen
+        //set timer to reset button view.
+        this.time.events.add(Phaser.Timer.SECOND / 4, function () {
+            this.buttons[player][keyIndex].frame = 0;
+        }, this);
+    },
 
-                //add button / input click for proceeding
+    calcRound: function (winner, loser) {
 
-                // go to state main menu
-                createScoreAnimation(this.world.centerX, "game ended! press any button", this);
-                this.p1.animations.stop();
-                this.p2.animations.stop();
-                this.gameScore.destroy();
-                this.add.text(550, 500, "end, press any key to exit");
+        this.createScoreAnimations(this.round[winner].time, this.round[loser].time, winner, loser);
 
-                this.input.onDown.add(function () {
-                    this.state.start('MainMenu');
+        this.views[winner].animations.stop();
+        this.views[loser].animations.stop();
+
+
+        //play winner animation and reduce life of loser
+        this.time.events.add(Phaser.Timer.SECOND, function () {
+            this.views[winner].animations.play('shoot');
+            this.time.events.add(Phaser.Timer.SECOND * 0.8, function () {
+                this.views[loser].animations.play('hit').onComplete.add(function () {
+                    this.views[loser].animations.stop();
+                    if (this.lifes[loser].children.length > 1) {
+
+                        //delete a heart
+                        this.lifes[loser].getAt(0).destroy();
+                        this.startNewRound = true;
+                    } else {
+                        this.lifes[loser].destroy();
+                        this.finishGame();
+                    }
                 }, this);
-            }
+            }, this);
+        }, this);
 
-            this.enableRandomButton();
+    },
+
+    resetRoundParameters: function () {
+        this.playerOneLocked = false;
+        this.playerTwoLocked = false;
+
+        this.buttons.p1[this.enabledButtonIndex].frame = 0;
+        this.buttons.p2[this.enabledButtonIndex].frame = 0;
+
+        this.round.p1.done = false;
+        this.round.p2.done = false;
+
+        this.round.p1.time = Number.MAX_VALUE;
+        this.round.p2.time = Number.MAX_VALUE;
+
+    },
+
+    createScoreAnimations: function (timeW, timeL, winner, loser) {
+
+        if (winner === "p1" && loser === "p2") {
+            this.createAnimation(timeW, "p1", true);
+            this.createAnimation(timeL, "p2", false);
+        } else if (winner === "p2" && loser === "p1") {
+            this.createAnimation(timeW, "p2", true);
+            this.createAnimation(timeL, "p1", false);
+        } else {
+            this.createAnimation("equal!", "none", false);
         }
+
+    },
+
+
+    createAnimation: function (message, player, tweenEnabled) {
+
+        var offset = 0;
+        if (player === "p1") {
+            offset = -150;
+        } else if (player === "p2") {
+            offset = 150;
+        }
+
+        if (message === Number.MAX_VALUE) {
+            message = "miss!";
+        }
+
+        var scoreFont = "45px Arial";
+        //Create a new label for the score
+        var scoreAnimation = this.add.text(this.world.centerX - offset, this.world.centerY + offset, message, {
+            font: scoreFont,
+            fill: "#39d179",
+            stroke: "#ffffff",
+            strokeThickness: 15
+        });
+        scoreAnimation.anchor.setTo(0.5, 0);
+        scoreAnimation.align = 'center';
+
+        if (tweenEnabled) { // tween enabled if this is the winner animation.
+            //Tween this score label to the total score label
+            var scoreTween = this.add.tween(scoreAnimation).to(
+                {
+                    x: this.world.centerX - offset,
+                    y: this.world.centerY + offset
+                }, 800, Phaser.Easing.Exponential.In, true);
+
+            //When the animation finishes, destroy this score label, trigger the total score labels animation and add the score
+            scoreTween.onComplete.add(function () {
+                scoreAnimation.destroy();
+            }, this);
+        } else {
+            this.time.events.add(Phaser.Timer.SECOND, function () {
+                scoreAnimation.destroy();
+            }, this);
+        }
+    },
+
+    finishGame: function () {
+        this.resetRoundParameters();
+        this.views.p1.animations.stop();
+        this.views.p2.animations.stop();
+        this.gameScore.destroy();
+        this.add.text(550, 600, "end, press any key to exit");
+
+        this.time.events.add(Phaser.Timer.SECOND * 3, function () {
+            this.state.start("MainMenu", true);
+        }, this);
 
     }
 };
-
-var timeP1;
-var timeP2;
-
-
-function createScoreAnimation(x, message, game) {
-
-    var scoreFont = "45px Arial";
-
-    //Create a new label for the score
-    var scoreAnimation = game.add.text(x, game.world.centerY, message, {
-        font: scoreFont,
-        fill: "#39d179",
-        stroke: "#ffffff",
-        strokeThickness: 15
-    });
-    scoreAnimation.anchor.setTo(0.5, 0);
-    scoreAnimation.align = 'center';
-
-    //Tween this score label to the total score label
-    var scoreTween = game.add.tween(scoreAnimation).to({x: x, y: 400}, 800, Phaser.Easing.Exponential.In, true);
-
-    //When the animation finishes, destroy this score label, trigger the total score labels animation and add the score
-    scoreTween.onComplete.add(function () {
-        scoreAnimation.destroy();
-    }, game);
-}
-

@@ -32,17 +32,7 @@ Shootme.Preloader.prototype = {
 
         this.preloadBar.cropEnabled = false;
 
-        this.state.start('MainMenu');
-
-    },
-
-    update: function () {
-
-        // if (this.cache.isSoundDecoded('titleMusic') && this.ready == false)
-        // {
-        // this.ready = true;
-        // this.state.start('MainMenu');
-        // }
+        this.state.start('MainMenu', true);
 
     }
 
