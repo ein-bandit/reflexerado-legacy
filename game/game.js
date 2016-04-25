@@ -230,6 +230,9 @@ Shootme.Game.prototype = {
         this.round[player].time =
             (keyIndex === this.enabledButtonIndex ? this.time.now - this.stoppageTime : Number.MAX_VALUE);
 
+        //reset button press
+        this.inputs[player][keyIndex].isDown = false;
+
         //reset enabled button
         this.buttons[player][this.enabledButtonIndex].frame = 0;
 
@@ -278,7 +281,7 @@ Shootme.Game.prototype = {
         var posEnd = this.views[loser].position;
 
         this.bullet.position.x = pos.x + this.views[winner].width / 2;
-        this.bullet.position.y = pos.y - 10;
+        this.bullet.position.y = pos.y;
         this.bullet.visible = true;
         this.add.tween(this.bullet).to(
             {
@@ -321,6 +324,9 @@ Shootme.Game.prototype = {
         } else if (winner === "p2" && loser === "p1") {
             this.createAnimation(timeW, "p2", true);
             this.createAnimation(timeL, "p1", false);
+        } else if (timeW === Number.MAX_VALUE && timeL === Number.MAX_VALUE) {
+            this.createAnimation(timeW, "p1", false);
+            this.createAnimation(timeL, "p2", false);
         } else {
             this.createAnimation("equal!", "none", false);
         }
@@ -372,7 +378,7 @@ Shootme.Game.prototype = {
         this.views.p1.animations.stop();
         this.views.p2.animations.stop();
         this.gameScore.destroy();
-        this.add.text(550, 600, "end, press any key to exit");
+        this.add.text(550, 600, "redirect in 3 seconds.");
 
         this.time.events.add(Phaser.Timer.SECOND * 3, function () {
             this.state.start("MainMenu", true);
