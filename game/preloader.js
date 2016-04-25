@@ -27,6 +27,8 @@ Shootme.Preloader.prototype = {
 
         this.load.image('heart', 'assets/heart.png');
         this.load.spritesheet('heart_animation', 'assets/heart_anim.png',32,32)
+
+        this.load.image('bullet', 'assets/bullet.png');
     },
 
     create: function () {

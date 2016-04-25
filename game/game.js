@@ -84,9 +84,13 @@ Shootme.Game.prototype = {
         this.views.p2.animations.add('hit', Phaser.ArrayUtils.numberArray(22, 26), 10, false);
 
         //heart animation
-        //to be done
-        this.heart = this.add.sprite(0,0, 'heart_animation');
-        this.heart.animations.add('kill', Phaser.ArrayUtils.numberArray(0,3), 5, false);
+        this.heart = this.add.sprite(0, 0, 'heart_animation');
+        this.heart.animations.add('kill', Phaser.ArrayUtils.numberArray(0, 3), 5, false);
+
+        //bullet
+        this.bullet = this.add.image(0, 0, 'bullet');
+        this.bullet.scale.setTo(0.5, 0.65);
+        this.bullet.visible = false;
 
         //controls
         this.buttons.p1.push(this.add.sprite(this.world.centerX - 96, 82, 'btns-blue'));
@@ -245,7 +249,10 @@ Shootme.Game.prototype = {
         //play winner animation and reduce life of loser
         this.time.events.add(Phaser.Timer.SECOND, function () {
             this.views[winner].animations.play('shoot');
-            this.time.events.add(Phaser.Timer.SECOND * 0.8, function () {
+            //tween bullet.
+            this.shootBullet(winner, loser);
+
+            this.time.events.add(Phaser.Timer.SECOND * 0.4, function () {
                 this.views[loser].animations.play('hit').onComplete.add(function () {
                     //this.views[loser].animations.stop();
                     if (this.lifes[loser].children.length > 1) {
@@ -261,7 +268,24 @@ Shootme.Game.prototype = {
 
     },
 
-    loseLife: function(heart) {
+    shootBullet: function (winner, loser) {
+
+        var pos = this.views[winner].position;
+        var posEnd = this.views[loser].position;
+
+        this.bullet.position.x = pos.x + this.views[winner].width / 2;
+        this.bullet.position.y = pos.y - 10;
+        this.bullet.visible = true;
+        this.add.tween(this.bullet).to(
+            {
+                x: posEnd.x + this.views.p1.width / 2,
+                y: posEnd.y
+            }, 200, Phaser.Easing.Default, true).onComplete.add(function () {
+            this.bullet.visible = false;
+        }, this);
+    },
+
+    loseLife: function (heart) {
         var pos = heart.position;
         heart.destroy();
 
@@ -324,16 +348,12 @@ Shootme.Game.prototype = {
         scoreAnimation.anchor.setTo(0.5, 0);
         scoreAnimation.align = 'center';
 
-        if (tweenEnabled) { // tween enabled if this is the winner animation.
-            //Tween this score label to the total score label
-            var scoreTween = this.add.tween(scoreAnimation).to(
+        if (tweenEnabled) {
+            this.add.tween(scoreAnimation).to(
                 {
                     x: this.world.centerX - offset,
                     y: this.world.centerY + offset
-                }, 800, Phaser.Easing.Exponential.In, true);
-
-            //When the animation finishes, destroy this score label, trigger the total score labels animation and add the score
-            scoreTween.onComplete.add(function () {
+                }, 800, Phaser.Easing.Exponential.In, true).onComplete.add(function () {
                 scoreAnimation.destroy();
             }, this);
         } else {
