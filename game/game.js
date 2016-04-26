@@ -68,7 +68,7 @@ Reflexerado.Game.prototype = {
     create: function () {
 
         if (debug === true) {
-            this.maxlifes = 5;
+            this.maxlifes = 2;
 
             this.minRoundTime = 2;
             this.maxRoundTime = 3;
@@ -324,10 +324,11 @@ Reflexerado.Game.prototype = {
 
         if (debug === true)
             console.log('losing heart');
-        var pos = heart.position;
+        var posx = heart.position.x;
+        //var posy = heart.position.y;
         heart.destroy();
 
-        this.hearts[loser].position.x = pos.x;
+        this.hearts[loser].position.x = posx;
         //this.hearts[loser].position.y = pos.y;
         this.hearts[loser].visible = true;
 
