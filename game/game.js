@@ -1,4 +1,4 @@
-var debug = true;
+var debug = false;
 
 Reflexerado.Game = function (game) {
 
@@ -64,7 +64,7 @@ Reflexerado.Game.prototype = {
     create: function () {
 
         if (debug === true) {
-            //this.maxlifes = 2;
+            this.maxlifes = 2;
 
             this.minRoundTime = 2;
             this.maxRoundTime = 3;
