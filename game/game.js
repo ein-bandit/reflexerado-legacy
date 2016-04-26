@@ -1,4 +1,4 @@
-var debug = false;
+var debug = true;
 
 Reflexerado.Game = function (game) {
 
@@ -64,7 +64,7 @@ Reflexerado.Game.prototype = {
     create: function () {
 
         if (debug === true) {
-            this.maxlifes = 2;
+            //this.maxlifes = 2;
 
             this.minRoundTime = 2;
             this.maxRoundTime = 3;
@@ -101,8 +101,6 @@ Reflexerado.Game.prototype = {
         this.buttons.p1.push(this.add.sprite(this.world.centerX - 96, 82, 'btns-blue'));
         this.buttons.p1.push(this.add.sprite(this.world.centerX, 210, 'btns-red'));
         this.buttons.p1.push(this.add.sprite(this.world.centerX + 96, 82, 'btns-blue'));
-
-        console.log(this.buttons.p1.length);
 
         this.buttons.p2.push(this.add.sprite(this.world.centerX - 96, this.world.height - 146, 'btns-blue'));
         this.buttons.p2.push(this.add.sprite(this.world.centerX, this.world.height - 274, 'btns-red'));
@@ -249,6 +247,9 @@ Reflexerado.Game.prototype = {
 
     calcRound: function (winner, loser) {
 
+        if (debug === true)
+            console.log('starting calc round');
+
         this.createScoreAnimations(this.round[winner].time, this.round[loser].time, winner, loser);
 
         this.views[winner].animations.stop();
@@ -257,12 +258,16 @@ Reflexerado.Game.prototype = {
 
         //play winner animation and reduce life of loser
         this.time.events.add(Phaser.Timer.SECOND, function () {
+            if (debug === true)
+                console.log('play shoot');
             this.views[winner].animations.play('shoot');
-            //tween bullet.
+
+            //tween bullet animation.
             this.shootBullet(winner, loser);
 
             this.time.events.add(Phaser.Timer.SECOND * 0.4, function () {
-                this.views[loser].animations.play('hit').onComplete.add(function () {
+                this.views[loser].animations.play('hit').onComplete.addOnce(function () {
+                    console.log('play hit');
                     //this.views[loser].animations.stop();
                     if (this.lifes[loser].children.length > 1) {
                         this.loseLife(this.lifes[loser].getAt(0));
@@ -278,7 +283,6 @@ Reflexerado.Game.prototype = {
     },
 
     shootBullet: function (winner, loser) {
-
         var pos = this.views[winner].position;
         var posEnd = this.views[loser].position;
 
@@ -295,13 +299,16 @@ Reflexerado.Game.prototype = {
     },
 
     loseLife: function (heart) {
+
+        if (debug === true)
+            console.log('losing heart');
         var pos = heart.position;
         heart.destroy();
 
         this.heart.position.x = pos.x;
         this.heart.position.y = pos.y;
         this.heart.visible = true;
-        this.heart.animations.play('kill').onComplete.add(function() {
+        this.heart.animations.play('kill').onComplete.add(function () {
             this.heart.visible = false;
         }, this);
     },
