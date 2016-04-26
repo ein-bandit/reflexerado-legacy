@@ -11,7 +11,7 @@ Reflexerado.Preloader.prototype = {
 
     preload: function () {
 
-        this.preloadBar = this.add.sprite(0, 100, 'preloaderBar');
+        this.preloadBar = this.add.sprite(this.world.width / 13 * 5, this.world.centerY, 'preloaderBar');
 
         this.load.setPreloadSprite(this.preloadBar);
 
