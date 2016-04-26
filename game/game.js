@@ -401,9 +401,6 @@ Reflexerado.Game.prototype = {
         scoreAnimation.align = 'center';
 
         if (tweenEnabled === true) {
-            if (debug === true)
-                console.log('tween from ' + scoreAnimation.scale.x + ' ' + scoreAnimation.scale.y);
-                console.log('tween to ' + (1.5 * ((player === "p2") ? -1 : 1)) + ' ' + (1.5 * ((player === "p2") ? -1 : 1)));
             this.add.tween(scoreAnimation.scale).to(
                 {
                     x: 1.5 * ((player === "p2") ? -1 : 1),
