@@ -379,7 +379,7 @@ Reflexerado.Game.prototype = {
 
         var offset = 0;
         if (player === "p1") {
-            offset = 150;
+            offset = 120;
         } else if (player === "p2") {
             offset = -150;
         }
@@ -407,8 +407,8 @@ Reflexerado.Game.prototype = {
         if (tweenEnabled === true) {
             this.add.tween(scoreAnimation.scale).to(
                 {
-                    x: 1.5 * ((player === "p2") ? -1 : 1),
-                    y: 1.5 * ((player === "p2") ? -1 : 1)
+                    x: 2 * ((player === "p2") ? -1 : 1),
+                    y: 2 * ((player === "p2") ? -1 : 1)
                 }, 800, Phaser.Easing.Exponential.In, true).onComplete.add(function () {
                 scoreAnimation.destroy();
             }, this);
@@ -429,7 +429,9 @@ Reflexerado.Game.prototype = {
         this.resetRoundParameters();
         this.views.p1.animations.stop();
         this.views.p2.animations.stop();
-        this.gameScore.destroy();
+        if (this.debug === true)
+            this.gameScore.destroy();
+        
         this.add.text(550, 600, "redirect in 3 seconds.");
 
         this.time.events.add(Phaser.Timer.SECOND * 3, function () {

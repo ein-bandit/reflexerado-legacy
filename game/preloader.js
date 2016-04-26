@@ -18,6 +18,8 @@ Reflexerado.Preloader.prototype = {
         this.load.image('bg', 'assets/background.png');
         this.load.image('titlescreen', 'assets/titlescreen.png');
 
+        this.load.spritesheet('title_buttons', 'assets/play_anim.png', 700, 100);
+        
         this.load.spritesheet('btns-red', 'assets/buttons_red.png', 128, 128);
         this.load.spritesheet('btns-blue', 'assets/buttons_blue.png', 128, 128);
 
