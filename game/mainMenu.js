@@ -8,14 +8,14 @@ Reflexerado.MainMenu = function (game) {
 
     this.controls = {
         p1: {
-            left: Phaser.Keyboard.M,
-            center: Phaser.Keyboard.J,
-            right: Phaser.Keyboard.I
-        },
-        p2: {
             left: Phaser.Keyboard.Q,
             center: Phaser.Keyboard.S,
             right: Phaser.Keyboard.Y
+        },
+        p2: {
+            left: Phaser.Keyboard.M,
+            center: Phaser.Keyboard.J,
+            right: Phaser.Keyboard.I
         }
     };
 
@@ -30,7 +30,7 @@ Reflexerado.MainMenu.prototype = {
         // this.music.play();
 
         var bg = this.add.image(0, 0, 'bg');
-        this.add.text(450, 500, 'press both red buttons to start.', {font: '36pt Arial'});
+        this.add.text(450, 500, 'press both red buttons to start.', {font: '36pt RioGrande'});
 
         this.input.enabled = true;
         var p1 = this.input.keyboard.addKey(this.controls.p1.center);

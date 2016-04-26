@@ -9,7 +9,7 @@ Reflexerado.Game = function (game) {
 
     this.lifes;
     this.maxlifes;
-    this.heart;
+    this.hearts;
 
     this.stoppageTime;
 
@@ -58,37 +58,48 @@ Reflexerado.Game.prototype = {
         };
         this.playerOneLocked = false;
         this.playerTwoLocked = false;
+
+        this.hearts = {
+            p1: null,
+            p2: null
+        };
     },
 
     create: function () {
 
         if (debug === true) {
-            this.maxlifes = 2;
+            this.maxlifes = 5;
 
             this.minRoundTime = 2;
             this.maxRoundTime = 3;
         }
 
 
-        //be aware. anything here is called twice!!
+        //be aware. anything here is called on state reload!
 
         var bg = this.add.image(0, 0, 'bg');
 
+        //p1 unten - rot
+        //p2 oben - gelb
+
+
         //player animations
-        this.views.p1 = this.add.sprite(this.world.centerX - 96, 96, 'p1_animations');
+
+        this.views.p1 = this.add.sprite(this.world.centerX - 96, this.world.height - 274, 'p1_animations');
         this.views.p1.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
         this.views.p1.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, false);
         this.views.p1.animations.add('hit', Phaser.ArrayUtils.numberArray(22, 26), 10, false);
 
-        this.views.p2 = this.add.sprite(this.world.centerX - 96, this.world.height - 274, 'p2_animations');
+        if (debug === true)
+            this.add.text(this.world.centerX - 96, this.world.height - 274, 'p1');
+
+        this.views.p2 = this.add.sprite(this.world.centerX - 96, 96, 'p2_animations');
         this.views.p2.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
         this.views.p2.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, false);
         this.views.p2.animations.add('hit', Phaser.ArrayUtils.numberArray(22, 26), 10, false);
 
-        //heart animation
-        this.heart = this.add.sprite(0, 0, 'heart_animation');
-        this.heart.animations.add('kill', Phaser.ArrayUtils.numberArray(0, 3), 5, false);
-        this.heart.visible = false;
+        if (debug === true)
+            this.add.text(this.world.centerX + 96, 274, 'p2');
 
         //bullet
         this.bullet = this.add.image(0, 0, 'bullet');
@@ -97,13 +108,13 @@ Reflexerado.Game.prototype = {
         this.bullet.visible = false;
 
         //controls
-        this.buttons.p1.push(this.add.sprite(this.world.centerX - 96, 82, 'btns-blue'));
-        this.buttons.p1.push(this.add.sprite(this.world.centerX, 210, 'btns-red'));
-        this.buttons.p1.push(this.add.sprite(this.world.centerX + 96, 82, 'btns-blue'));
-
-        this.buttons.p2.push(this.add.sprite(this.world.centerX - 96, this.world.height - 146, 'btns-blue'));
-        this.buttons.p2.push(this.add.sprite(this.world.centerX, this.world.height - 274, 'btns-red'));
-        this.buttons.p2.push(this.add.sprite(this.world.centerX + 96, this.world.height - 146, 'btns-blue'));
+        this.buttons.p1.push(this.add.sprite(this.world.centerX - 96, this.world.height - 146, 'btns-blue'));
+        this.buttons.p1.push(this.add.sprite(this.world.centerX, this.world.height - 274, 'btns-red'));
+        this.buttons.p1.push(this.add.sprite(this.world.centerX + 96, this.world.height - 146, 'btns-blue'));
+        
+        this.buttons.p2.push(this.add.sprite(this.world.centerX - 96, 82, 'btns-blue'));
+        this.buttons.p2.push(this.add.sprite(this.world.centerX, 210, 'btns-red'));
+        this.buttons.p2.push(this.add.sprite(this.world.centerX + 96, 82, 'btns-blue'));
 
         this.inputs.p1 = [this.input.keyboard.addKey(this.controls.p1.left),
             this.input.keyboard.addKey(this.controls.p1.center),
@@ -128,13 +139,25 @@ Reflexerado.Game.prototype = {
         this.lifes.p2 = this.add.group();
 
         for (var i = 0; i < this.maxlifes; i++) {
-            this.lifes.p1.create(this.world.width / 2 - 60 + 40 * i, 30, 'heart');
-            this.lifes.p2.create(this.world.width / 2 - 60 + 40 * i, this.world.height - 60, 'heart');
+            this.lifes.p1.create(this.world.width / 2 - 60 + 40 * i, this.world.height - 60, 'heart');
+            var p2Life = this.lifes.p2.create(this.world.width / 2 + 92 - 40 * i, 64, 'heart');
+            p2Life.scale.y *= -1;
         }
+
+        //heart animation
+        this.hearts.p1 = this.add.sprite(this.world.width / 2 - 60, this.world.height - 60, 'heart_animation');
+        this.hearts.p1.animations.add('kill', Phaser.ArrayUtils.numberArray(0, 3), 5, false);
+        this.hearts.p1.visible = false;
+
+        //heart animation
+        this.hearts.p2 = this.add.sprite(this.world.width / 2 + 92, 64, 'heart_flipped_animation');
+        this.hearts.p2.animations.add('kill', Phaser.ArrayUtils.numberArray(0, 3), 5, false);
+        this.hearts.p2.visible = false;
+        this.hearts.p2.anchor.set(0,1);
+
 
         // start game logic
         this.startNewRound = true;
-
     },
 
     update: function () {
@@ -169,7 +192,7 @@ Reflexerado.Game.prototype = {
             if (this.gameScore) {
                 this.gameScore.destroy();
             }
-            this.gameScore = this.add.text(550, 500, 'lifes: ' + this.lifes.p1.length + ' : ' + this.lifes.p2.length, {font: '36pt Arial'});
+            this.gameScore = this.add.text(550, 500, 'lifes: ' + this.lifes.p1.length + ' : ' + this.lifes.p2.length, {font: "36pt RioGrande"});
         }
     },
 
@@ -269,10 +292,10 @@ Reflexerado.Game.prototype = {
                     console.log('play hit');
                     //this.views[loser].animations.stop();
                     if (this.lifes[loser].children.length > 1) {
-                        this.loseLife(this.lifes[loser].getAt(0));
+                        this.loseLife(this.lifes[loser].getAt(0), loser);
                         this.startNewRound = true;
                     } else {
-                        this.loseLife(this.lifes[loser]);
+                        this.loseLife(this.lifes[loser], loser);
                         this.finishGame();
                     }
                 }, this);
@@ -297,19 +320,21 @@ Reflexerado.Game.prototype = {
         }, this);
     },
 
-    loseLife: function (heart) {
+    loseLife: function (heart, loser) {
 
         if (debug === true)
             console.log('losing heart');
         var pos = heart.position;
         heart.destroy();
 
-        this.heart.position.x = pos.x;
-        this.heart.position.y = pos.y;
-        this.heart.visible = true;
-        this.heart.animations.play('kill').onComplete.add(function () {
-            this.heart.visible = false;
+        this.hearts[loser].position.x = pos.x;
+        //this.hearts[loser].position.y = pos.y;
+        this.hearts[loser].visible = true;
+
+        this.hearts[loser].animations.play('kill').onComplete.add(function () {
+            this.hearts[loser].visible = false;
         }, this);
+
     },
 
     resetRoundParameters: function () {
@@ -349,31 +374,39 @@ Reflexerado.Game.prototype = {
 
         var offset = 0;
         if (player === "p1") {
-            offset = -150;
-        } else if (player === "p2") {
             offset = 150;
+        } else if (player === "p2") {
+            offset = -150;
         }
 
         if (message === Number.MAX_VALUE) {
             message = "miss!";
         }
 
-        var scoreFont = "45px Arial";
         //Create a new label for the score
         var scoreAnimation = this.add.text(this.world.centerX - offset, this.world.centerY + offset, message, {
-            font: scoreFont,
+            font: "45pt RioGrande",
             fill: "#39d179",
             stroke: "#ffffff",
             strokeThickness: 15
         });
+
+        if (player === "p2") {
+            scoreAnimation.scale.x *= -1;
+            scoreAnimation.scale.y *= -1;
+        }
+
         scoreAnimation.anchor.setTo(0.5, 0);
         scoreAnimation.align = 'center';
 
-        if (tweenEnabled) {
-            this.add.tween(scoreAnimation).to(
+        if (tweenEnabled === true) {
+            if (debug === true)
+                console.log('tween from ' + scoreAnimation.scale.x + ' ' + scoreAnimation.scale.y);
+                console.log('tween to ' + (1.5 * ((player === "p2") ? -1 : 1)) + ' ' + (1.5 * ((player === "p2") ? -1 : 1)));
+            this.add.tween(scoreAnimation.scale).to(
                 {
-                    x: this.world.centerX - offset,
-                    y: this.world.centerY + offset
+                    x: 1.5 * ((player === "p2") ? -1 : 1),
+                    y: 1.5 * ((player === "p2") ? -1 : 1)
                 }, 800, Phaser.Easing.Exponential.In, true).onComplete.add(function () {
                 scoreAnimation.destroy();
             }, this);
@@ -384,6 +417,12 @@ Reflexerado.Game.prototype = {
         }
     },
 
+    flipAnimation: function(scoreAnimation) {
+        if (debug == true)
+            console.log("flipping score animation");
+        scoreAnimation.scale.y *= -1;
+        scoreAnimation.scale.x *= -1;
+    },
     finishGame: function () {
         this.resetRoundParameters();
         this.views.p1.animations.stop();
