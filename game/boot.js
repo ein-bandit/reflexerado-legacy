@@ -1,3 +1,6 @@
+
+var debug = false;
+
 Reflexerado = {};
 
 Reflexerado.Boot = function (game) {

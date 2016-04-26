@@ -1,4 +1,3 @@
-var debug = false;
 
 Reflexerado.Game = function (game) {
 
