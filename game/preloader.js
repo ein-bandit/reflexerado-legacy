@@ -15,11 +15,11 @@ Reflexerado.Preloader.prototype = {
 
         this.load.setPreloadSprite(this.preloadBar);
 
-        this.load.image('btn-play', 'assets/button_play.png');
+        this.load.image('bg', 'assets/background.png');
+        this.load.image('titlescreen', 'assets/titlescreen.png');
 
         this.load.spritesheet('btns-red', 'assets/buttons_red.png', 128, 128);
         this.load.spritesheet('btns-blue', 'assets/buttons_blue.png', 128, 128);
-        this.load.image('bg', 'assets/background.png');
 
         this.load.spritesheet('p1_animations', 'assets/red_animations.png', 256, 256);
         this.load.spritesheet('p2_animations', 'assets/yellow_animations.png', 256, 256);
@@ -29,6 +29,9 @@ Reflexerado.Preloader.prototype = {
         this.load.spritesheet('heart_flipped_animation', 'assets/heart_flipped_anim.png',32,32);
 
         this.load.image('bullet', 'assets/bullet.png');
+
+        this.load.audio('bg_audio', 'assets/sound/ambient.mp3');
+        this.load.audio('shot', 'assets/sound/gunshot.wav');
     },
 
     create: function () {

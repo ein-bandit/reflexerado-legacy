@@ -26,6 +26,8 @@ Reflexerado.Game = function (game) {
 
     this.playerOneLocked;
     this.playerTwoLocked;
+
+    this.sound;
 };
 
 var keycounter = 0;
@@ -63,6 +65,10 @@ Reflexerado.Game.prototype = {
             p1: null,
             p2: null
         };
+
+        this.sound = {
+            shoot: null
+        }
     },
 
     create: function () {
@@ -78,7 +84,7 @@ Reflexerado.Game.prototype = {
         //be aware. anything here is called on state reload!
 
         var bg = this.add.image(0, 0, 'bg');
-
+        this.sound.shoot = this.add.audio('shot');
         //p1 unten - rot
         //p2 oben - gelb
 
@@ -133,15 +139,11 @@ Reflexerado.Game.prototype = {
             tempButtons[nein].enabled = false;
         }
 
-
         //init hearts
-        this.lifes.p1 = this.add.group();
-        this.lifes.p2 = this.add.group();
-
         for (var i = 0; i < this.maxlifes; i++) {
-            this.lifes.p1.create(this.world.width / 2 - 60 + 40 * i, this.world.height - 60, 'heart');
-            var p2Life = this.lifes.p2.create(this.world.width / 2 + 92 - 40 * i, 64, 'heart');
-            p2Life.scale.y *= -1;
+            this.lifes.p1.push(this.add.sprite(this.world.width / 2 - 60 + 40 * i, this.world.height - 60, 'heart'));
+            this.lifes.p2.push(this.add.sprite(this.world.width / 2 + 92 - 40 * i, 64, 'heart'));
+            this.lifes.p2[i].scale.y *= -1;
         }
 
         //heart animation
@@ -192,7 +194,7 @@ Reflexerado.Game.prototype = {
             if (this.gameScore) {
                 this.gameScore.destroy();
             }
-            this.gameScore = this.add.text(550, 500, 'lifes: ' + this.lifes.p1.length + ' : ' + this.lifes.p2.length, {font: "36pt RioGrande"});
+            this.gameScore = this.add.text(550, 500, 'lifes: ' + this.lifes.p1.length + ' : ' + this.lifes.p2.length, {font: "36pt Western"});
         }
     },
 
@@ -291,11 +293,11 @@ Reflexerado.Game.prototype = {
                 this.views[loser].animations.play('hit').onComplete.addOnce(function () {
                     console.log('play hit');
                     //this.views[loser].animations.stop();
-                    if (this.lifes[loser].children.length > 1) {
-                        this.loseLife(this.lifes[loser].getAt(0), loser);
+                    if (this.lifes[loser].length > 1) {
+                        this.loseLife(this.lifes[loser][0], loser);
                         this.startNewRound = true;
                     } else {
-                        this.loseLife(this.lifes[loser], loser);
+                        this.loseLife(this.lifes[loser][0], loser);
                         this.finishGame();
                     }
                 }, this);
@@ -311,6 +313,7 @@ Reflexerado.Game.prototype = {
         this.bullet.position.x = pos.x + this.views[winner].width / 2;
         this.bullet.position.y = pos.y + this.views[winner].height / 3; // workaround for correct bullet starting point.
         this.bullet.visible = true;
+        this.sound.shoot.play();
         this.add.tween(this.bullet).to(
             {
                 x: posEnd.x + this.views.p1.width / 2,
@@ -323,10 +326,11 @@ Reflexerado.Game.prototype = {
     loseLife: function (heart, loser) {
 
         if (debug === true)
-            console.log('losing heart');
+            console.log('losing heart ' + heart.position.x);
         var posx = heart.position.x;
         //var posy = heart.position.y;
         heart.destroy();
+        this.lifes[loser].shift();
 
         this.hearts[loser].position.x = posx;
         //this.hearts[loser].position.y = pos.y;
@@ -386,7 +390,7 @@ Reflexerado.Game.prototype = {
 
         //Create a new label for the score
         var scoreAnimation = this.add.text(this.world.centerX - offset, this.world.centerY + offset, message, {
-            font: "45pt RioGrande",
+            font: "45pt Western",
             fill: "#39d179",
             stroke: "#ffffff",
             strokeThickness: 15
