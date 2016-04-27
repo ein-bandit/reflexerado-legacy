@@ -99,7 +99,6 @@ Reflexerado.MainMenu.prototype = {
 
 
             this.time.events.add(Phaser.Timer.SECOND, function () {
-                console.log(this.world.anchor);
                 this.add.tween(this.titlescreen.scale).to(
                     {
                         x: 50,

@@ -22,9 +22,6 @@ Reflexerado.Preloader.prototype = {
 
         this.load.spritesheet('title_buttons', 'assets/play_anim.png', 700, 100);
 
-        this.load.image('hole', 'assets/hole.png');
-        this.load.image('hole_2', 'assets/hole_t.png');
-
         this.load.spritesheet('btns-red', 'assets/buttons_red.png', 128, 128);
         this.load.spritesheet('btns-blue', 'assets/buttons_blue.png', 128, 128);
 

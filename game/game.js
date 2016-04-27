@@ -127,7 +127,7 @@ Reflexerado.Game.prototype = {
             if (this.gameScore) {
                 this.gameScore.destroy();
             }
-            this.gameScore = this.add.text(550, 500, 'lifes: ' + this.lifes.p1.length + ' : ' + this.lifes.p2.length, {font: "36pt Western"});
+            //this.gameScore = this.add.text(550, 500, 'lifes: ' + this.lifes.p1.length + ' : ' + this.lifes.p2.length, {font: "36pt Western"});
         }
     },
 
@@ -232,7 +232,7 @@ Reflexerado.Game.prototype = {
                     } else {
                         this.loseLife(this.lifes[loser][0], loser);
                         this.views[loser].animations.play('death').onComplete.add(function() {
-                            this.finishGame();
+                            this.finishGame(loser);
                         }, this);
                     }
                 }, this);
@@ -326,7 +326,7 @@ Reflexerado.Game.prototype = {
         //Create a new label for the score
         var scoreAnimation = this.add.text(this.world.centerX - offset, this.world.centerY + offset, message, {
             font: "45pt Western",
-            fill: "#39d179",
+            fill: "brown",
             stroke: "#ffffff",
             strokeThickness: 15
         });
@@ -360,14 +360,25 @@ Reflexerado.Game.prototype = {
         scoreAnimation.scale.y *= -1;
         scoreAnimation.scale.x *= -1;
     },
-    finishGame: function () {
+
+    finishGame: function (loser) {
         this.resetRoundParameters();
         this.views.p1.animations.stop();
         this.views.p2.animations.stop();
         if (this.debug === true)
             this.gameScore.destroy();
-        
-        this.add.text(550, 600, "redirect in 3 seconds.");
+        var textp2;
+        var winnerText = "Lucky Luke is proud on you.";
+        var loserText = "next match starts at noon...";
+        if (loser === "p1") {
+            textp2 = this.add.text(this.world.centerX + 240, this.world.centerY - 25, winnerText, {font: "36pt Western", fill: "black"});
+            this.add.text(this.world.centerX - 240, this.world.centerY + 25, loserText, {font: "36pt Western", fill: "black"});
+        } else {
+            this.add.text(this.world.centerX - 240, this.world.centerY + 25, winnerText, {font: "36pt Western", fill: "black"});
+            textp2 = this.add.text(this.world.centerX + 240, this.world.centerY - 25, loserText, {font: "36pt Western", fill: "black"});
+        }
+        textp2.scale.x *= -1;
+        textp2.scale.y *= -1;
 
         this.time.events.add(Phaser.Timer.SECOND * 3, function () {
             this.state.start("MainMenu", true);
