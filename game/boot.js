@@ -9,7 +9,7 @@ Reflexerado.Boot.prototype = {
 
     preload: function () {
 
-        this.load.image('preloaderBar', 'assets/preload.png');
+        this.load.image('preloaderBar', 'assets/preload_new.png');
 
     },
 
