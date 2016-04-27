@@ -80,84 +80,16 @@ Reflexerado.Game.prototype = {
             this.maxRoundTime = 3;
         }
 
-
         //be aware. anything here is called on state reload!
-
         var bg = this.add.image(0, 0, 'bg');
         this.sound.shoot = this.add.audio('shot');
+
         //p1 unten - rot
         //p2 oben - gelb
+        this.initButtons();
 
-
-        //player animations
-
-        this.views.p1 = this.add.sprite(this.world.centerX - 96, this.world.height - 274, 'p1_animations');
-        this.views.p1.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
-        this.views.p1.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, false);
-        this.views.p1.animations.add('hit', Phaser.ArrayUtils.numberArray(22, 26), 10, false);
-        this.views.p1.animations.add('death', Phaser.ArrayUtils.numberArray(27, 36), 6, false);
-
-        if (debug === true)
-            this.add.text(this.world.centerX - 96, this.world.height - 274, 'p1');
-
-        this.views.p2 = this.add.sprite(this.world.centerX - 96, 96, 'p2_animations');
-        this.views.p2.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
-        this.views.p2.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, false);
-        this.views.p2.animations.add('hit', Phaser.ArrayUtils.numberArray(22, 26), 10, false);
-
-        if (debug === true)
-            this.add.text(this.world.centerX + 96, 274, 'p2');
-
-        //bullet
-        this.bullet = this.add.image(0, 0, 'bullet');
-        this.bullet.scale.setTo(0.5, 0.65);
-        this.bullet.anchor.setTo(0.5, 0.5);
-        this.bullet.visible = false;
-
-        //controls
-        this.buttons.p1.push(this.add.sprite(this.world.centerX - 96, this.world.height - 146, 'btns-blue'));
-        this.buttons.p1.push(this.add.sprite(this.world.centerX, this.world.height - 274, 'btns-red'));
-        this.buttons.p1.push(this.add.sprite(this.world.centerX + 96, this.world.height - 146, 'btns-blue'));
-        
-        this.buttons.p2.push(this.add.sprite(this.world.centerX - 96, 82, 'btns-blue'));
-        this.buttons.p2.push(this.add.sprite(this.world.centerX, 210, 'btns-red'));
-        this.buttons.p2.push(this.add.sprite(this.world.centerX + 96, 82, 'btns-blue'));
-
-        this.inputs.p1 = [this.input.keyboard.addKey(this.controls.p1.left),
-            this.input.keyboard.addKey(this.controls.p1.center),
-            this.input.keyboard.addKey(this.controls.p1.right)];
-        this.inputs.p2 = [this.input.keyboard.addKey(this.controls.p2.left),
-            this.input.keyboard.addKey(this.controls.p2.center),
-            this.input.keyboard.addKey(this.controls.p2.right)];
-
-        var tempInputs = this.inputs.p1.concat(this.inputs.p2);
-        var tempButtons = this.buttons.p1.concat(this.buttons.p2);
-        for (var key in tempInputs) {
-            tempInputs[key].onDown.add(this.evaluateInput, this);
-        }
-        for (var nein in tempButtons) {
-            tempButtons[nein].scale.setTo(0.5);
-            tempButtons[nein].enabled = false;
-        }
-
-        //init hearts
-        for (var i = 0; i < this.maxlifes; i++) {
-            this.lifes.p1.push(this.add.sprite(this.world.width / 2 - 60 + 40 * i, this.world.height - 60, 'heart'));
-            this.lifes.p2.push(this.add.sprite(this.world.width / 2 + 92 - 40 * i, 64, 'heart'));
-            this.lifes.p2[i].scale.y *= -1;
-        }
-
-        //heart animation
-        this.hearts.p1 = this.add.sprite(this.world.width / 2 - 60, this.world.height - 60, 'heart_animation');
-        this.hearts.p1.animations.add('kill', Phaser.ArrayUtils.numberArray(0, 3), 5, false);
-        this.hearts.p1.visible = false;
-
-        //heart animation
-        this.hearts.p2 = this.add.sprite(this.world.width / 2 + 92, 64, 'heart_flipped_animation');
-        this.hearts.p2.animations.add('kill', Phaser.ArrayUtils.numberArray(0, 3), 5, false);
-        this.hearts.p2.visible = false;
-        this.hearts.p2.anchor.set(0,1);
-
+        this.initPlayerView();
+        this.initGameObjects();
 
         // start game logic
         this.startNewRound = true;
@@ -441,5 +373,83 @@ Reflexerado.Game.prototype = {
             this.state.start("MainMenu", true);
         }, this);
 
+    },
+
+
+    //init functions
+    initButtons: function () {
+        //controls
+        this.buttons.p1.push(this.add.sprite(this.world.centerX - 96, this.world.height - 146, 'btns-blue'));
+        this.buttons.p1.push(this.add.sprite(this.world.centerX, this.world.height - 274, 'btns-red'));
+        this.buttons.p1.push(this.add.sprite(this.world.centerX + 96, this.world.height - 146, 'btns-blue'));
+
+        this.buttons.p2.push(this.add.sprite(this.world.centerX - 96, 82, 'btns-blue'));
+        this.buttons.p2.push(this.add.sprite(this.world.centerX, 210, 'btns-red'));
+        this.buttons.p2.push(this.add.sprite(this.world.centerX + 96, 82, 'btns-blue'));
+
+        this.inputs.p1 = [this.input.keyboard.addKey(this.controls.p1.left),
+            this.input.keyboard.addKey(this.controls.p1.center),
+            this.input.keyboard.addKey(this.controls.p1.right)];
+        this.inputs.p2 = [this.input.keyboard.addKey(this.controls.p2.left),
+            this.input.keyboard.addKey(this.controls.p2.center),
+            this.input.keyboard.addKey(this.controls.p2.right)];
+
+        var tempInputs = this.inputs.p1.concat(this.inputs.p2);
+        var tempButtons = this.buttons.p1.concat(this.buttons.p2);
+        for (var key in tempInputs) {
+            tempInputs[key].onDown.add(this.evaluateInput, this);
+        }
+        for (var nein in tempButtons) {
+            tempButtons[nein].scale.setTo(0.5);
+            tempButtons[nein].enabled = false;
+        }
+    },
+
+    initPlayerView: function() {
+        //player animations
+
+        this.views.p1 = this.add.sprite(this.world.centerX - 96, this.world.height - 274, 'p1_animations');
+        this.views.p1.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
+        this.views.p1.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, false);
+        this.views.p1.animations.add('hit', Phaser.ArrayUtils.numberArray(22, 26), 10, false);
+        this.views.p1.animations.add('death', Phaser.ArrayUtils.numberArray(27, 36), 6, false);
+
+        if (debug === true)
+            this.add.text(this.world.centerX - 96, this.world.height - 274, 'p1');
+
+        this.views.p2 = this.add.sprite(this.world.centerX - 96, 96, 'p2_animations');
+        this.views.p2.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
+        this.views.p2.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, false);
+        this.views.p2.animations.add('hit', Phaser.ArrayUtils.numberArray(22, 26), 10, false);
+
+        if (debug === true)
+            this.add.text(this.world.centerX + 96, 274, 'p2');
+    },
+
+    initGameObjects: function() {
+        //bullet
+        this.bullet = this.add.image(0, 0, 'bullet');
+        this.bullet.scale.setTo(0.5, 0.65);
+        this.bullet.anchor.setTo(0.5, 0.5);
+        this.bullet.visible = false;
+
+
+        //init hearts
+        for (var i = 0; i < this.maxlifes; i++) {
+            this.lifes.p1.push(this.add.sprite(this.world.width / 2 - 60 + 40 * i, this.world.height - 60, 'heart'));
+            this.lifes.p2.push(this.add.sprite(this.world.width / 2 + 92 - 40 * i, 64, 'heart'));
+            this.lifes.p2[i].scale.y *= -1;
+        }
+
+        //heart animation
+        this.hearts.p1 = this.add.sprite(this.world.width / 2 - 60, this.world.height - 60, 'heart_animation');
+        this.hearts.p1.animations.add('kill', Phaser.ArrayUtils.numberArray(0, 3), 5, false);
+        this.hearts.p1.visible = false;
+
+        //heart animation
+        this.hearts.p2 = this.add.sprite(this.world.width / 2 + 92, 64, 'heart_flipped_animation');
+        this.hearts.p2.animations.add('kill', Phaser.ArrayUtils.numberArray(0, 3), 5, false);
+        this.hearts.p2.visible = false;
+        this.hearts.p2.anchor.set(0,1);
     }
 };
