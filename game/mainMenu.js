@@ -80,7 +80,6 @@ Reflexerado.MainMenu.prototype = {
     },
 
     update: function () {
-        console.log("player1 ready: " + this.playerOneReady);
         if (this.playerOneReady === true && this.playerTwoReady === true) {
             this.shoot.play();
             this.title_buttons.p1.animations.stop();
