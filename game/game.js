@@ -92,7 +92,7 @@ Reflexerado.Game.prototype = {
         this.initGameObjects();
 
         // start game logic
-        //this.startNewRound = true;
+        this.startNewRound = true;
     },
 
     update: function () {
