@@ -66,15 +66,21 @@ Reflexerado.MainMenu.prototype = {
         p1.onDown.add(function () {
             this.playerOneReady = true;
         }, this);
+        p1.onUp.add(function() {
+            this.playerOneReady = false;
+        }, this);
         var p2 = this.input.keyboard.addKey(this.controls.p2.center);
         p2.onDown.add(function () {
             this.playerTwoReady = true;
+        }, this);
+        p2.onUp.add(function() {
+            this.playerTwoReady = false;
         }, this);
 
     },
 
     update: function () {
-
+        console.log("player1 ready: " + this.playerOneReady);
         if (this.playerOneReady === true && this.playerTwoReady === true) {
             this.shoot.play();
             this.title_buttons.p1.animations.stop();
@@ -83,7 +89,6 @@ Reflexerado.MainMenu.prototype = {
             this.playerTwoReady = false;
             this.time.events.add(Phaser.Timer.SECOND, function () {
                 this.state.start('Game', true, false, {controls: this.controls});
-
             }, this);
         }
 
