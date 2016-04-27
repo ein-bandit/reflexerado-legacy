@@ -95,6 +95,7 @@ Reflexerado.Game.prototype = {
         this.views.p1.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
         this.views.p1.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, false);
         this.views.p1.animations.add('hit', Phaser.ArrayUtils.numberArray(22, 26), 10, false);
+        this.views.p1.animations.add('death', Phaser.ArrayUtils.numberArray(27, 36), 6, false);
 
         if (debug === true)
             this.add.text(this.world.centerX - 96, this.world.height - 274, 'p1');
@@ -298,7 +299,9 @@ Reflexerado.Game.prototype = {
                         this.startNewRound = true;
                     } else {
                         this.loseLife(this.lifes[loser][0], loser);
-                        this.finishGame();
+                        this.views[loser].animations.play('death').onComplete.add(function() {
+                            this.finishGame();
+                        }, this);
                     }
                 }, this);
             }, this);
