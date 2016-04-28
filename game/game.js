@@ -1,4 +1,3 @@
-
 Reflexerado.Game = function (game) {
 
     this.startNewRound;
@@ -42,7 +41,7 @@ Reflexerado.Game.prototype = {
         this.lifes = {p1: [], p2: []};
         this.maxlifes = 5;
         this.gameScore = "";
-        this.minRoundTime = 5;
+        this.minRoundTime = 2;
         this.maxRoundTime = 10;
         this.views = {
             p1: null,
@@ -231,7 +230,7 @@ Reflexerado.Game.prototype = {
                         this.startNewRound = true;
                     } else {
                         this.loseLife(this.lifes[loser][0], loser);
-                        this.views[loser].animations.play('death').onComplete.add(function() {
+                        this.views[loser].animations.play('death').onComplete.add(function () {
                             this.finishGame(loser);
                         }, this);
                     }
@@ -249,12 +248,14 @@ Reflexerado.Game.prototype = {
         this.bullet.position.y = pos.y + this.views[winner].height / 3; // workaround for correct bullet starting point.
         this.bullet.visible = true;
         this.sound.shoot.play();
-        this.add.tween(this.bullet).to(
-            {
-                x: posEnd.x + this.views.p1.width / 2,
-                y: posEnd.y
-            }, 200, Phaser.Easing.Default, true).onComplete.add(function () {
-            this.bullet.visible = false;
+        this.time.events.add(Phaser.Timer.SECOND * 0.4, function () {
+            this.add.tween(this.bullet).to(
+                {
+                    x: posEnd.x + this.views.p1.width / 2,
+                    y: posEnd.y
+                }, 200, Phaser.Easing.Default, true).onComplete.add(function () {
+                this.bullet.visible = false;
+            }, this);
         }, this);
     },
 
@@ -344,17 +345,17 @@ Reflexerado.Game.prototype = {
                 {
                     x: 2 * ((player === "p2") ? -1 : 1),
                     y: 2 * ((player === "p2") ? -1 : 1)
-                }, 800, Phaser.Easing.Exponential.In, true).onComplete.add(function () {
+                }, 1200, Phaser.Easing.Exponential.In, true).onComplete.add(function () {
                 scoreAnimation.destroy();
             }, this);
         } else {
-            this.time.events.add(Phaser.Timer.SECOND, function () {
+            this.time.events.add(Phaser.Timer.SECOND * 1.2, function () {
                 scoreAnimation.destroy();
             }, this);
         }
     },
 
-    flipAnimation: function(scoreAnimation) {
+    flipAnimation: function (scoreAnimation) {
         if (debug == true)
             console.log("flipping score animation");
         scoreAnimation.scale.y *= -1;
@@ -371,16 +372,28 @@ Reflexerado.Game.prototype = {
         var winnerText = "Lucky Luke is proud on you.";
         var loserText = "next match starts at noon...";
         if (loser === "p1") {
-            textp2 = this.add.text(this.world.centerX + 240, this.world.centerY - 25, winnerText, {font: "36pt Western", fill: "black"});
-            this.add.text(this.world.centerX - 240, this.world.centerY + 25, loserText, {font: "36pt Western", fill: "black"});
+            textp2 = this.add.text(this.world.centerX + 240, this.world.centerY - 25, winnerText, {
+                font: "36pt Western",
+                fill: "black"
+            });
+            this.add.text(this.world.centerX - 240, this.world.centerY + 25, loserText, {
+                font: "36pt Western",
+                fill: "black"
+            });
         } else {
-            this.add.text(this.world.centerX - 240, this.world.centerY + 25, winnerText, {font: "36pt Western", fill: "black"});
-            textp2 = this.add.text(this.world.centerX + 240, this.world.centerY - 25, loserText, {font: "36pt Western", fill: "black"});
+            this.add.text(this.world.centerX - 240, this.world.centerY + 25, winnerText, {
+                font: "36pt Western",
+                fill: "black"
+            });
+            textp2 = this.add.text(this.world.centerX + 240, this.world.centerY - 25, loserText, {
+                font: "36pt Western",
+                fill: "black"
+            });
         }
         textp2.scale.x *= -1;
         textp2.scale.y *= -1;
 
-        this.time.events.add(Phaser.Timer.SECOND * 3, function () {
+        this.time.events.add(Phaser.Timer.SECOND * 4, function () {
             this.state.start("MainMenu", true);
         }, this);
 
@@ -416,14 +429,14 @@ Reflexerado.Game.prototype = {
         }
     },
 
-    initPlayerView: function() {
+    initPlayerView: function () {
         //player animations
 
         this.views.p1 = this.add.sprite(this.world.centerX - 96, this.world.height - 274, 'p1_animations');
         this.views.p1.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
         this.views.p1.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, false);
         this.views.p1.animations.add('hit', Phaser.ArrayUtils.numberArray(22, 26), 10, false);
-        this.views.p1.animations.add('death', Phaser.ArrayUtils.numberArray(27, 36), 6, false);
+        this.views.p1.animations.add('death', Phaser.ArrayUtils.numberArray(27, 36), 8, false);
 
         if (debug === true)
             this.add.text(this.world.centerX - 96, this.world.height - 274, 'p1');
@@ -432,14 +445,14 @@ Reflexerado.Game.prototype = {
         this.views.p2.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
         this.views.p2.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, false);
         this.views.p2.animations.add('hit', Phaser.ArrayUtils.numberArray(22, 26), 10, false);
-        this.views.p2.animations.add('death', Phaser.ArrayUtils.numberArray(27, 36), 6, false);
+        this.views.p2.animations.add('death', Phaser.ArrayUtils.numberArray(27, 36), 8, false);
 
 
         if (debug === true)
             this.add.text(this.world.centerX + 96, 274, 'p2');
     },
 
-    initGameObjects: function() {
+    initGameObjects: function () {
         //bullet
         this.bullet = this.add.image(0, 0, 'bullet');
         this.bullet.scale.setTo(0.5, 0.65);
@@ -463,6 +476,6 @@ Reflexerado.Game.prototype = {
         this.hearts.p2 = this.add.sprite(this.world.width / 2 + 92, 64, 'heart_flipped_animation');
         this.hearts.p2.animations.add('kill', Phaser.ArrayUtils.numberArray(0, 3), 5, false);
         this.hearts.p2.visible = false;
-        this.hearts.p2.anchor.set(0,1);
+        this.hearts.p2.anchor.set(0, 1);
     }
 };

@@ -25,9 +25,9 @@ Reflexerado.MainMenu.prototype = {
                 right: Phaser.Keyboard.Y
             },
             p2: {
-                left: Phaser.Keyboard.M,
+                left: Phaser.Keyboard.I,
                 center: Phaser.Keyboard.J,
-                right: Phaser.Keyboard.I
+                right: Phaser.Keyboard.M
             }
         };
 
