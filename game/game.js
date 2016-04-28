@@ -432,6 +432,8 @@ Reflexerado.Game.prototype = {
         this.views.p2.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
         this.views.p2.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, false);
         this.views.p2.animations.add('hit', Phaser.ArrayUtils.numberArray(22, 26), 10, false);
+        this.views.p2.animations.add('death', Phaser.ArrayUtils.numberArray(27, 36), 6, false);
+
 
         if (debug === true)
             this.add.text(this.world.centerX + 96, 274, 'p2');
