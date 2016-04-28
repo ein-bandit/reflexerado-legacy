@@ -38,10 +38,25 @@
         game.state.add('Game', Reflexerado.Game);
 
         game.state.start('Boot');
+
+        this.document.getElementById("start").addEventListener('click',function() {
+            game.state.getCurrentState().playerOneReady = true;
+            game.state.getCurrentState().playerTwoReady = true;
+            this.style.display = "none";
+
+        },false);
+
     };
 </script>
-<h1 style="font-family:Western; font-size: 40pt">Reflexerado</h1>
-<p style="font-size: 12pt">p1 (red): q,s (red),y - p2 (yellow): i,j ( red),m</p>
+<div>
+    <h1 style="font-family:Western; font-size: 40pt">Reflexerado&nbsp;<button id="start" style="">start game</button></h1>
+
+</div>
+<p style="font-size: 12pt">p1 (red): q,s (red),y - p2 (yellow): i,j (red),m</p>
+
+
+
+
 
 </body>
 
