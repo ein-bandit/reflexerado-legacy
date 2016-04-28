@@ -66,7 +66,8 @@ Reflexerado.Game.prototype = {
         };
 
         this.sound = {
-            shoot: null
+            shoot: null,
+            pain: null
         }
     },
 
@@ -82,6 +83,8 @@ Reflexerado.Game.prototype = {
         //be aware. anything here is called on state reload!
         var bg = this.add.image(0, 0, 'bg');
         this.sound.shoot = this.add.audio('shot');
+        this.sound.pain = this.add.audio('pain');
+        this.sound.pain.volume = 0.3;
 
         //p1 unten - rot
         //p2 oben - gelb
@@ -246,15 +249,20 @@ Reflexerado.Game.prototype = {
 
         this.bullet.position.x = pos.x + this.views[winner].width / 2;
         this.bullet.position.y = pos.y + this.views[winner].height / 3; // workaround for correct bullet starting point.
-        this.bullet.visible = true;
         this.sound.shoot.play();
         this.time.events.add(Phaser.Timer.SECOND * 0.4, function () {
+            this.time.events.add(Phaser.Timer.SECOND * 0.2, function () {
+                this.bullet.visible = true;
+            }, this);
             this.add.tween(this.bullet).to(
                 {
                     x: posEnd.x + this.views.p1.width / 2,
                     y: posEnd.y
                 }, 200, Phaser.Easing.Default, true).onComplete.add(function () {
                 this.bullet.visible = false;
+                this.time.events.add(Phaser.Timer.SECOND * 0.2, function () {
+                    this.sound.pain.play();
+                }, this);
             }, this);
         }, this);
     },
