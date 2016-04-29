@@ -516,7 +516,7 @@ Reflexerado.Game.prototype = {
         //player animations
 
         this.views.p1 = this.add.sprite(this.world.centerX - 96, this.world.height - 274, 'p1_animations');
-        this.views.p1.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 19), 10, true);
+        this.views.p1.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 19), 6, true);
         this.views.p1.animations.add('shoot', Phaser.ArrayUtils.numberArray(20, 32), 10, false);
         this.views.p1.animations.add('hit', Phaser.ArrayUtils.numberArray(33, 37), 10, false);
         this.views.p1.animations.add('death', Phaser.ArrayUtils.numberArray(38, 47), 8, false);
