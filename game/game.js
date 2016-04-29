@@ -282,9 +282,7 @@ Reflexerado.Game.prototype = {
                     y: posEnd.y
                 }, 200, Phaser.Easing.Default, true).onComplete.add(function () {
                 this.bullet.visible = false;
-                this.time.events.add(Phaser.Timer.SECOND * 0.2, function () {
-                    this.sound.pain.play();
-                }, this);
+                this.sound.pain.play();
             }, this);
         }, this);
     },
