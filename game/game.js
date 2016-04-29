@@ -27,6 +27,7 @@ Reflexerado.Game = function (game) {
     this.playerTwoLocked;
 
     this.sound;
+    this.tumbleweed;
 };
 
 var keycounter = 0;
@@ -71,6 +72,11 @@ Reflexerado.Game.prototype = {
         };
 
         this.sound = data.mute;
+        this.tumbleweed = {
+            minTime: 25,
+            maxTime: 50,
+            isPlanned: false
+        };
     },
 
     create: function () {
@@ -80,6 +86,9 @@ Reflexerado.Game.prototype = {
 
             this.minRoundTime = 2;
             this.maxRoundTime = 3;
+
+            this.tumbleweed.minTime = 1;
+            this.tumbleweed.maxTime = 5;
         }
 
         //be aware. anything here is called on state reload!
@@ -127,7 +136,10 @@ Reflexerado.Game.prototype = {
 
             //reset round parameters
             this.resetRoundParameters();
+
         }
+
+        this.planTumbleweed();
 
         if (this.startNewRound === true) {
             this.startNewRound = false;
@@ -237,7 +249,6 @@ Reflexerado.Game.prototype = {
 
             this.time.events.add(Phaser.Timer.SECOND * 0.4, function () {
                 this.views[loser].animations.play('hit').onComplete.addOnce(function () {
-                    console.log('play hit');
                     //this.views[loser].animations.stop();
                     if (this.lifes[loser].length > 1) {
                         this.loseLife(this.lifes[loser][0], loser);
@@ -294,6 +305,61 @@ Reflexerado.Game.prototype = {
         this.hearts[loser].animations.play('kill').onComplete.add(function () {
             this.hearts[loser].visible = false;
         }, this);
+
+    },
+
+
+    planTumbleweed: function () {
+        if (this.tumbleweed.isPlanned === false) {
+            //get random time 25-50s
+            this.time.events.add(Phaser.Timer.SECOND *
+                this.rnd.realInRange(this.tumbleweed.minTime, this.tumbleweed.maxTime), function () {
+                this.runTumbleweed();
+            }, this);
+
+            this.tumbleweed.isPlanned = true;
+        }
+    },
+    runTumbleweed: function () {
+        //get random x, y
+        var found = false;
+        var startX = 0;
+        var startY = 10;
+        var endY = this.world.height - 10;
+        while (!found) {
+            startX = this.rnd.realInRange(this.world.width / 3, this.world.width * (2 / 3));
+            if (!(startX > this.views.p1.position.x && startX < (this.views.p1.position.x + this.views.p1.width))) {
+                found = true;
+            } else {
+                if (debug === true)
+                    console.log("no valid tumbleweed position.");
+            }
+        }
+
+        var compl = Math.round(startX);
+        if (compl % 2 === 0) {
+            if (debug === true)
+                console.log("tumbleweed inverse run.");
+            var temp = startY;
+            startY = endY;
+            endY = temp;
+        }
+
+        var tumbleweed = this.add.sprite(startX, startY, 'tumbleweed');
+        tumbleweed.animations.add('run', Phaser.ArrayUtils.numberArray(0, 4), 10, true);
+
+        tumbleweed.play('run');
+
+        this.add.tween(tumbleweed).to(
+            {
+                x: startX,
+                y: endY
+            }, 2000, Phaser.Easing.Default, true).onComplete.add(function () {
+            tumbleweed.destroy();
+        }, this);
+
+        this.tumbleweed.isPlanned = false;
+
 
     },
 
