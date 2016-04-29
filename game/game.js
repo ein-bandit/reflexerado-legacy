@@ -28,6 +28,9 @@ Reflexerado.Game = function (game) {
 
     this.sound;
     this.tumbleweed;
+    this.interAnimation;
+
+    this.isFinished;
 };
 
 var keycounter = 0;
@@ -70,13 +73,19 @@ Reflexerado.Game.prototype = {
             shoot: null,
             pain: null
         };
-
+        //overriding sound attribute
         this.sound = data.mute;
         this.tumbleweed = {
             minTime: 25,
             maxTime: 50,
             isPlanned: false
         };
+        this.interAnimation = {
+            minTime: 5,
+            maxTime: 20
+        };
+
+        this.isFinished = false;
     },
 
     create: function () {
@@ -116,34 +125,34 @@ Reflexerado.Game.prototype = {
     },
 
     update: function () {
-        if (this.round.p1.done === true && this.round.p2.done === true) {
-            if (debug === true)
-                console.log("got result");
+        if (this.isFinished === false) {
+            if (this.round.p1.done === true && this.round.p2.done === true) {
+                if (debug === true)
+                    console.log("got result");
 
-            this.input.enabled = false;
+                this.input.enabled = false;
 
-            if (this.round.p1.time < this.round.p2.time) {
-                this.calcRound("p1", "p2");
-            } else if (this.round.p1.time > this.round.p2.time) {
-                this.calcRound("p2", "p1");
-            } else {
-                //show two misses.
-                this.createScoreAnimations(this.round.p1.time, this.round.p2.time, "none", "none");
-                this.time.events.add(Phaser.Timer.SECOND * 1.5, function () {
-                    this.startNewRound = true;
-                }, this);
+                if (this.round.p1.time < this.round.p2.time) {
+                    this.calcRound("p1", "p2");
+                } else if (this.round.p1.time > this.round.p2.time) {
+                    this.calcRound("p2", "p1");
+                } else {
+                    //show two misses.
+                    this.createScoreAnimations(this.round.p1.time, this.round.p2.time, "none", "none");
+                    this.time.events.add(Phaser.Timer.SECOND * 1.5, function () {
+                        this.startNewRound = true;
+                    }, this);
+                }
+                //reset round parameters
+                this.resetRoundParameters();
             }
 
-            //reset round parameters
-            this.resetRoundParameters();
+            this.planTumbleweed();
 
-        }
-
-        this.planTumbleweed();
-
-        if (this.startNewRound === true) {
-            this.startNewRound = false;
-            this.startRound();
+            if (this.startNewRound === true) {
+                this.startNewRound = false;
+                this.startRound();
+            }
         }
     },
 
@@ -161,6 +170,8 @@ Reflexerado.Game.prototype = {
         this.views.p1.animations.play('idle');
         this.views.p2.animations.play('idle');
 
+        this.initIntermediateAnimations();
+
         this.time.events.add(Phaser.Timer.SECOND *
             this.rnd.realInRange(this.minRoundTime, this.maxRoundTime), function () {
             this.enabledButtonIndex = this.rnd.integerInRange(0, 2);
@@ -174,6 +185,20 @@ Reflexerado.Game.prototype = {
         }, this);
     },
 
+    initIntermediateAnimations: function () {
+        // turn head every x seconds
+        this.time.events.add(Phaser.Timer.SECOND *
+            this.rnd.realInRange(this.interAnimation.minTime, this.interAnimation.maxTime), function () {
+            if (this.isFinished === false) {
+                //var player = "p" + Math.round(this.rnd.realInRange(1, 2));
+                var player = "p1";
+                this.views[player].animations.stop();
+                this.views[player].animations.play('turnhead').onComplete.addOnce(function () {
+                    this.views[player].animations.play('idle');
+                }, this);
+            }
+        }, this);
+    },
 
     showAndEnableButtons: function () {
         this.buttons.p1[this.enabledButtonIndex].frame = 1;
@@ -322,7 +347,7 @@ Reflexerado.Game.prototype = {
         //get random x, y
         var found = false;
         var startX = 0;
-        var startY = 10;
+        var startY = -40;
         var endY = this.world.height - 10;
         while (!found) {
             startX = this.rnd.realInRange(this.world.width / 3, this.world.width * (2 / 3));
@@ -446,6 +471,7 @@ Reflexerado.Game.prototype = {
     },
 
     finishGame: function (loser) {
+        this.isFinished = true;
         this.resetRoundParameters();
         this.views.p1.animations.stop();
         this.views.p2.animations.stop();
@@ -516,7 +542,8 @@ Reflexerado.Game.prototype = {
         //player animations
 
         this.views.p1 = this.add.sprite(this.world.centerX - 96, this.world.height - 274, 'p1_animations');
-        this.views.p1.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 19), 6, true);
+        this.views.p1.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 17), 4, true);
+        this.views.p1.animations.add('turnhead', Phaser.ArrayUtils.numberArray(18, 19), 4, false);
         this.views.p1.animations.add('shoot', Phaser.ArrayUtils.numberArray(20, 32), 10, false);
         this.views.p1.animations.add('hit', Phaser.ArrayUtils.numberArray(33, 37), 10, false);
         this.views.p1.animations.add('death', Phaser.ArrayUtils.numberArray(38, 47), 8, false);
@@ -526,6 +553,7 @@ Reflexerado.Game.prototype = {
 
         this.views.p2 = this.add.sprite(this.world.centerX - 96, 96, 'p2_animations');
         this.views.p2.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
+        this.views.p1.animations.add('turnhead', Phaser.ArrayUtils.numberArray(6, 8), 4, false);
         this.views.p2.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, false);
         this.views.p2.animations.add('hit', Phaser.ArrayUtils.numberArray(22, 26), 10, false);
         this.views.p2.animations.add('death', Phaser.ArrayUtils.numberArray(27, 36), 8, false);
