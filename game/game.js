@@ -452,7 +452,7 @@ Reflexerado.Game.prototype = {
         if (this.debug === true)
             this.gameScore.destroy();
         var textp2;
-        var winnerText = "Lucky Luke is proud on you.";
+        var winnerText = "Lucky Luke is proud of you.";
         var loserText = "next match starts at noon...";
         if (loser === "p1") {
             textp2 = this.add.text(this.world.centerX + 240, this.world.centerY - 25, winnerText, {
