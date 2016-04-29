@@ -352,7 +352,7 @@ Reflexerado.Game.prototype = {
             {
                 x: startX,
                 y: endY
-            }, 2000, Phaser.Easing.Default, true).onComplete.add(function () {
+            }, 4000, Phaser.Easing.Default, true).onComplete.add(function () {
             tumbleweed.destroy();
         }, this);
 
