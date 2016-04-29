@@ -68,7 +68,9 @@ Reflexerado.Game.prototype = {
         this.sound = {
             shoot: null,
             pain: null
-        }
+        };
+
+        this.sound = data.mute;
     },
 
     create: function () {
@@ -86,6 +88,13 @@ Reflexerado.Game.prototype = {
         this.sound.pain = this.add.audio('pain');
         this.sound.pain.volume = 0.3;
 
+        if (webmode === true) {
+            this.muteKey = this.input.keyboard.addKey(Phaser.Keyboard.Z);
+            this.muteKey.onDown.add(function () {
+                this.sound.mute = !this.sound.mute;
+            }, this);
+        }
+
         //p1 unten - rot
         //p2 oben - gelb
         this.initButtons();
@@ -101,7 +110,9 @@ Reflexerado.Game.prototype = {
         if (this.round.p1.done === true && this.round.p2.done === true) {
             if (debug === true)
                 console.log("got result");
+
             this.input.enabled = false;
+
             if (this.round.p1.time < this.round.p2.time) {
                 this.calcRound("p1", "p2");
             } else if (this.round.p1.time > this.round.p2.time) {

@@ -39,18 +39,21 @@
 
         game.state.start('Boot');
 
-        this.document.getElementById("start").addEventListener('click',function() {
-            game.state.getCurrentState().playerOneReady = true;
-            game.state.getCurrentState().playerTwoReady = true;
-            this.style.display = "none";
+        if (webmode === true) {
+            var btn = document.createElement("button");        // Create a <button> element
+            var t = document.createTextNode("start game");       // Create a text node
+            btn.appendChild(t);
+            this.document.getElementById("start").appendChild(btn).addEventListener('click',function() {
+                game.state.getCurrentState().playerOneReady = true;
+                game.state.getCurrentState().playerTwoReady = true;
+                this.style.display = "none";
 
-        },false);
-
+            },false);
+        }
     };
 </script>
 <div>
-    <h1 style="font-family:Western; font-size: 40pt">Reflexerado&nbsp;<button id="start" style="">start game</button></h1>
-
+    <h1 id="start" style="font-family:Western; font-size: 40pt">Reflexerado&nbsp;</h1>
 </div>
 <p style="font-size: 12pt">p1 (red): q,s (red),y - p2 (yellow): i,j (red),m</p>
 

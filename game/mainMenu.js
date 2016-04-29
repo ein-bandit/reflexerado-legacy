@@ -47,11 +47,11 @@ Reflexerado.MainMenu.prototype = {
             if (debug === false)
                 this.music.play();
         }
-        this.screen = this.add.image(0,0,'screen');
-        this.screen.scale.setTo(1*(4/3),1*(4/3));
+        this.screen = this.add.image(0, 0, 'screen');
+        this.screen.scale.setTo(1 * (4 / 3), 1 * (4 / 3));
 
         this.titlescreen = this.add.image(this.world.centerX, this.world.centerY, 'titlescreen');
-        this.titlescreen.anchor.setTo(0.5,0.5);
+        this.titlescreen.anchor.setTo(0.5, 0.5);
 
         this.title_buttons.p1 = this.add.sprite(this.world.width / 2 - 350, this.world.height / 7 * 6, 'title_buttons');
         this.title_buttons.p1.animations.add('press');
@@ -69,16 +69,23 @@ Reflexerado.MainMenu.prototype = {
         p1.onDown.add(function () {
             this.playerOneReady = true;
         }, this);
-        p1.onUp.add(function() {
+        p1.onUp.add(function () {
             this.playerOneReady = false;
         }, this);
         var p2 = this.input.keyboard.addKey(this.controls.p2.center);
         p2.onDown.add(function () {
             this.playerTwoReady = true;
         }, this);
-        p2.onUp.add(function() {
+        p2.onUp.add(function () {
             this.playerTwoReady = false;
         }, this);
+
+        if (webmode === true) {
+            this.input.keyboard.addKey(Phaser.Keyboard.Z).onDown.add(function () {
+                this.sound.mute = true;
+            }, this);
+        }
+
 
     },
 
@@ -90,9 +97,9 @@ Reflexerado.MainMenu.prototype = {
             this.playerOneReady = false;
             this.playerTwoReady = false;
             this.titlescreen.visible = false;
-            this.titlescreen = this.add.image(this.world.centerX,this.world.centerY,'fakescreen');
-            this.titlescreen.anchor.set(0.5,0.5);
-            this.titlescreen.scale.set(1.429,1.429);
+            this.titlescreen = this.add.image(this.world.centerX, this.world.centerY, 'fakescreen');
+            this.titlescreen.anchor.set(0.5, 0.5);
+            this.titlescreen.scale.set(1.429, 1.429);
 
             this.title_buttons.p1.visible = false;
             this.title_buttons.p2.visible = false;
@@ -105,7 +112,7 @@ Reflexerado.MainMenu.prototype = {
                         y: 50
                     }, 600, Phaser.Easing.Circular.In, true).onComplete.add(function () {
                     this.titlescreen.visible = false;
-                    this.state.start('Game', true, false, {controls: this.controls});
+                    this.state.start('Game', true, false, {controls: this.controls, mute: this.sound});
                 }, this);
 
             }, this);

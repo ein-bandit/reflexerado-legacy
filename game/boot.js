@@ -1,4 +1,5 @@
 var debug = false;
+var webmode = true;
 
 Reflexerado = {};
 
