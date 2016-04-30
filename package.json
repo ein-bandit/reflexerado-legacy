@@ -1,12 +1,10 @@
 {
-  "name": "reflexerado",
+  "name": "Reflexerado",
   "version": "1.0.0",
-  "description": "",
+  "description": "Reflexerado, quick fingers required!",
   "main": "index.html",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "kaufi",
+  "scripts": {},
+  "author": "kaufi07",
   "license": "ISC",
   "dependencies": {
     "phaser": "^2.4.6"
