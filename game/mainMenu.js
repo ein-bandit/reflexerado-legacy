@@ -18,6 +18,7 @@ Reflexerado.MainMenu.prototype = {
         this.playerOneReady = false;
         this.playerTwoReady = false;
 
+        //p2 has swapped controls on left/right.
         if (webmode === true) {
             this.controls = {
                 p1: {
@@ -26,9 +27,9 @@ Reflexerado.MainMenu.prototype = {
                     right: Phaser.Keyboard.Y
                 },
                 p2: {
-                    left: Phaser.Keyboard.I,
+                    left: Phaser.Keyboard.M,
                     center: Phaser.Keyboard.J,
-                    right: Phaser.Keyboard.M
+                    right: Phaser.Keyboard.I
                 }
             };
         } else {

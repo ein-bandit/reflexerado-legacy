@@ -543,9 +543,9 @@ Reflexerado.Game.prototype = {
         this.inputs.p1 = [this.input.keyboard.addKey(this.controls.p1.left),
             this.input.keyboard.addKey(this.controls.p1.center),
             this.input.keyboard.addKey(this.controls.p1.right)];
-        this.inputs.p2 = [this.input.keyboard.addKey(this.controls.p2.left),
+        this.inputs.p2 = [this.input.keyboard.addKey(this.controls.p2.right),
             this.input.keyboard.addKey(this.controls.p2.center),
-            this.input.keyboard.addKey(this.controls.p2.right)];
+            this.input.keyboard.addKey(this.controls.p2.left)];
 
         var tempInputs = this.inputs.p1.concat(this.inputs.p2);
         var tempButtons = this.buttons.p1.concat(this.buttons.p2);
