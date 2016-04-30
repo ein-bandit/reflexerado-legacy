@@ -82,7 +82,8 @@ Reflexerado.Game.prototype = {
         };
         this.interAnimation = {
             minTime: 5,
-            maxTime: 20
+            maxTime: 20,
+            values: ["turn", "scratch", "hat"]
         };
 
         this.isFinished = false;
@@ -98,6 +99,9 @@ Reflexerado.Game.prototype = {
 
             this.tumbleweed.minTime = 1;
             this.tumbleweed.maxTime = 5;
+
+            this.interAnimation.minTime = 5;
+            this.interAnimation.maxTime = 5;
         }
 
         //be aware. anything here is called on state reload!
@@ -187,14 +191,22 @@ Reflexerado.Game.prototype = {
 
     initIntermediateAnimations: function () {
         // turn head every x seconds
+        if (debug === true)
+            console.log("init inter animation.");
+
         this.time.events.add(Phaser.Timer.SECOND *
             this.rnd.realInRange(this.interAnimation.minTime, this.interAnimation.maxTime), function () {
             if (this.isFinished === false) {
-                //var player = "p" + Math.round(this.rnd.realInRange(1, 2));
-                var player = "p1";
-                this.views[player].animations.stop();
-                this.views[player].animations.play('turnhead').onComplete.addOnce(function () {
-                    this.views[player].animations.play('idle');
+                var player = "p" + Math.round(this.rnd.realInRange(1, 2));
+                var anim = Math.round(this.rnd.realInRange(0, 2));
+                if (debug === true) {
+                    player = "p1";
+                    console.log("playing anim " + player + " : " + this.interAnimation.values[anim]);
+                }
+                this.views[player].animations.play(this.interAnimation.values[anim]).onComplete.addOnce(function () {
+                    if (this.isFinished === false) {
+                        this.views[player].animations.play('idle');
+                    }
                 }, this);
             }
         }, this);
@@ -473,8 +485,9 @@ Reflexerado.Game.prototype = {
     finishGame: function (loser) {
         this.isFinished = true;
         this.resetRoundParameters();
-        this.views.p1.animations.stop();
-        this.views.p2.animations.stop();
+        this.views.p1.animations.is
+        //this.views.p1.animations.stop();
+        //this.views.p2.animations.stop();
         if (this.debug === true)
             this.gameScore.destroy();
         var textp2;
@@ -542,21 +555,25 @@ Reflexerado.Game.prototype = {
         //player animations
 
         this.views.p1 = this.add.sprite(this.world.centerX - 96, this.world.height - 274, 'p1_animations');
-        this.views.p1.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 17), 4, true);
-        this.views.p1.animations.add('turnhead', Phaser.ArrayUtils.numberArray(18, 19), 4, false);
-        this.views.p1.animations.add('shoot', Phaser.ArrayUtils.numberArray(20, 32), 10, false);
-        this.views.p1.animations.add('hit', Phaser.ArrayUtils.numberArray(33, 37), 10, false);
-        this.views.p1.animations.add('death', Phaser.ArrayUtils.numberArray(38, 47), 8, false);
+        this.views.p1.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 13), 4, true);
+        this.views.p1.animations.add('turn', Phaser.ArrayUtils.numberArray(14, 18), 4, false);
+        this.views.p1.animations.add('scratch', Phaser.ArrayUtils.numberArray(19, 22), 4, false);
+        this.views.p1.animations.add('hat', Phaser.ArrayUtils.numberArray(23, 30), 4, false);
+        this.views.p1.animations.add('shoot', Phaser.ArrayUtils.numberArray(31, 44), 10, false);
+        this.views.p1.animations.add('hit', Phaser.ArrayUtils.numberArray(45, 49), 10, false);
+        this.views.p1.animations.add('death', Phaser.ArrayUtils.numberArray(50, 59), 5, false);
 
         if (debug === true)
             this.add.text(this.world.centerX - 96, this.world.height - 274, 'p1');
 
         this.views.p2 = this.add.sprite(this.world.centerX - 96, 96, 'p2_animations');
-        this.views.p2.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
-        this.views.p1.animations.add('turnhead', Phaser.ArrayUtils.numberArray(6, 8), 4, false);
-        this.views.p2.animations.add('shoot', Phaser.ArrayUtils.numberArray(9, 21), 10, false);
-        this.views.p2.animations.add('hit', Phaser.ArrayUtils.numberArray(22, 26), 10, false);
-        this.views.p2.animations.add('death', Phaser.ArrayUtils.numberArray(27, 36), 8, false);
+        this.views.p2.animations.add('idle', Phaser.ArrayUtils.numberArray(0, 13), 4, true);
+        this.views.p2.animations.add('turn', Phaser.ArrayUtils.numberArray(14, 18), 4, false);
+        this.views.p2.animations.add('scratch', Phaser.ArrayUtils.numberArray(19, 22), 4, false);
+        this.views.p2.animations.add('hat', Phaser.ArrayUtils.numberArray(23, 30), 4, false);
+        this.views.p2.animations.add('shoot', Phaser.ArrayUtils.numberArray(31, 44), 10, false);
+        this.views.p2.animations.add('hit', Phaser.ArrayUtils.numberArray(45, 49), 10, false);
+        this.views.p2.animations.add('death', Phaser.ArrayUtils.numberArray(50, 59), 5, false);
 
 
         if (debug === true)
