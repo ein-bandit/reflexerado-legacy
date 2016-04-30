@@ -18,18 +18,33 @@ Reflexerado.MainMenu.prototype = {
         this.playerOneReady = false;
         this.playerTwoReady = false;
 
-        this.controls = {
-            p1: {
-                left: Phaser.Keyboard.Q,
-                center: Phaser.Keyboard.S,
-                right: Phaser.Keyboard.Y
-            },
-            p2: {
-                left: Phaser.Keyboard.I,
-                center: Phaser.Keyboard.J,
-                right: Phaser.Keyboard.M
-            }
-        };
+        if (webmode === true) {
+            this.controls = {
+                p1: {
+                    left: Phaser.Keyboard.Q,
+                    center: Phaser.Keyboard.S,
+                    right: Phaser.Keyboard.Y
+                },
+                p2: {
+                    left: Phaser.Keyboard.I,
+                    center: Phaser.Keyboard.J,
+                    right: Phaser.Keyboard.M
+                }
+            };
+        } else {
+            this.controls = {
+                p1: {
+                    left: Phaser.Keyboard.A,
+                    center: Phaser.Keyboard.TWO,
+                    right: Phaser.Keyboard.C
+                },
+                p2: {
+                    left: Phaser.Keyboard.I,
+                    center: Phaser.Keyboard.K,
+                    right: 191
+                }
+            };
+        }
 
         this.title_buttons = {
             p1: null,
