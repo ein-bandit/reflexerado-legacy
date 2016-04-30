@@ -82,9 +82,10 @@ Reflexerado.Game.prototype = {
             isPlanned: false
         };
         this.interAnimation = {
-            minTime: 5,
-            maxTime: 20,
-            values: ["turn", "scratch", "hat"]
+            minTime: 4,
+            maxTime: 8,
+            values: ["turn", "scratch", "hat"],
+            times: 2
         };
 
         this.isFinished = false;
@@ -196,22 +197,24 @@ Reflexerado.Game.prototype = {
         if (debug === true)
             console.log("init inter animation.");
 
-        this.time.events.add(Phaser.Timer.SECOND *
-            this.rnd.realInRange(this.interAnimation.minTime, this.interAnimation.maxTime), function () {
-            if (this.isFinished === false) {
-                var player = "p" + Math.round(this.rnd.realInRange(1, 2));
-                var anim = Math.round(this.rnd.realInRange(0, 2));
-                if (debug === true) {
-                    player = "p1";
-                    console.log("playing anim " + player + " : " + this.interAnimation.values[anim]);
-                }
-                this.views[player].animations.play(this.interAnimation.values[anim]).onComplete.addOnce(function () {
-                    if (this.isFinished === false) {
-                        this.views[player].animations.play('idle');
+        for(var i = 1; i < this.interAnimation.times; i++) {
+            this.time.events.add(Phaser.Timer.SECOND *
+                this.rnd.realInRange(this.interAnimation.minTime * i, this.interAnimation.maxTime * i), function () {
+                if (this.isFinished === false) {
+                    var player = "p" + Math.round(this.rnd.realInRange(1, 2));
+                    var anim = Math.round(this.rnd.realInRange(0, 2));
+                    if (debug === true) {
+                        player = "p1";
+                        console.log("playing anim " + player + " : " + this.interAnimation.values[anim]);
                     }
-                }, this);
-            }
-        }, this);
+                    this.views[player].animations.play(this.interAnimation.values[anim]).onComplete.addOnce(function () {
+                        if (this.isFinished === false) {
+                            this.views[player].animations.play('idle');
+                        }
+                    }, this);
+                }
+            }, this);
+        }
     },
 
     showAndEnableButtons: function () {
@@ -301,7 +304,6 @@ Reflexerado.Game.prototype = {
                 }, this);
             }, this);
         }, this);
-
     },
 
     shootBullet: function (winner, loser, isKillShot) {
