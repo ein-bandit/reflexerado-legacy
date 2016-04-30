@@ -39,6 +39,7 @@ Reflexerado.Preloader.prototype = {
         this.load.audio('bg_audio', 'assets/sound/ambient.mp3');
         this.load.audio('shot', 'assets/sound/gunshot.wav');
         this.load.audio('pain', 'assets/sound/pain.wav');
+        this.load.audio('death', 'assets/sound/death.wav');
     },
 
     create: function () {

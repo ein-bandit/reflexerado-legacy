@@ -69,9 +69,10 @@ Reflexerado.Game.prototype = {
             p2: null
         };
 
-        this.sound = {
+        this.sounds = {
             shoot: null,
-            pain: null
+            pain: null,
+            death: null
         };
         //overriding sound attribute
         this.sound = data.mute;
@@ -106,9 +107,10 @@ Reflexerado.Game.prototype = {
 
         //be aware. anything here is called on state reload!
         var bg = this.add.image(0, 0, 'bg');
-        this.sound.shoot = this.add.audio('shot');
-        this.sound.pain = this.add.audio('pain');
-        this.sound.pain.volume = 0.3;
+        this.sounds.shoot = this.add.audio('shot');
+        this.sounds.death = this.add.audio('death');
+        this.sounds.pain = this.add.audio('pain');
+        this.sounds.pain.volume = 0.3;
 
         if (webmode === true) {
             this.muteKey = this.input.keyboard.addKey(Phaser.Keyboard.Z);
@@ -282,7 +284,7 @@ Reflexerado.Game.prototype = {
             this.views[winner].animations.play('shoot');
 
             //tween bullet animation.
-            this.shootBullet(winner, loser);
+            this.shootBullet(winner, loser, this.lifes[loser].length === 1);
 
             this.time.events.add(Phaser.Timer.SECOND * 0.4, function () {
                 this.views[loser].animations.play('hit').onComplete.addOnce(function () {
@@ -291,7 +293,7 @@ Reflexerado.Game.prototype = {
                         this.loseLife(this.lifes[loser][0], loser);
                         this.startNewRound = true;
                     } else {
-                        this.loseLife(this.lifes[loser][0], loser);
+                        this.loseLife(this.lifes[loser][0], loser, true);
                         this.views[loser].animations.play('death').onComplete.add(function () {
                             this.finishGame(loser);
                         }, this);
@@ -302,13 +304,13 @@ Reflexerado.Game.prototype = {
 
     },
 
-    shootBullet: function (winner, loser) {
+    shootBullet: function (winner, loser, isKillShot) {
         var pos = this.views[winner].position;
         var posEnd = this.views[loser].position;
 
         this.bullet.position.x = pos.x + this.views[winner].width / 2;
         this.bullet.position.y = pos.y + this.views[winner].height / 3; // workaround for correct bullet starting point.
-        this.sound.shoot.play();
+        this.sounds.shoot.play();
         this.time.events.add(Phaser.Timer.SECOND * 0.4, function () {
             this.time.events.add(Phaser.Timer.SECOND * 0.2, function () {
                 this.bullet.visible = true;
@@ -319,7 +321,11 @@ Reflexerado.Game.prototype = {
                     y: posEnd.y
                 }, 200, Phaser.Easing.Default, true).onComplete.add(function () {
                 this.bullet.visible = false;
-                this.sound.pain.play();
+                if (isKillShot) {
+                    this.sounds.death.play();
+                } else {
+                    this.sounds.pain.play();
+                }
             }, this);
         }, this);
     },
@@ -340,7 +346,6 @@ Reflexerado.Game.prototype = {
         this.hearts[loser].animations.play('kill').onComplete.add(function () {
             this.hearts[loser].visible = false;
         }, this);
-
     },
 
 
