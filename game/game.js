@@ -568,7 +568,7 @@ Reflexerado.Game.prototype = {
         this.views.p1.animations.add('hat', Phaser.ArrayUtils.numberArray(23, 30), 4, false);
         this.views.p1.animations.add('shoot', Phaser.ArrayUtils.numberArray(31, 44), 10, false);
         this.views.p1.animations.add('hit', Phaser.ArrayUtils.numberArray(45, 49), 10, false);
-        this.views.p1.animations.add('death', Phaser.ArrayUtils.numberArray(50, 59), 5, false);
+        this.views.p1.animations.add('death', Phaser.ArrayUtils.numberArray(50, 59), 6, false);
 
         if (debug === true)
             this.add.text(this.world.centerX - 96, this.world.height - 274, 'p1');
