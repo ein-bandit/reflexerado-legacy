@@ -32,7 +32,7 @@ Reflexerado.Preloader.prototype = {
         this.load.spritesheet('heart_animation', 'assets/heart_anim.png',32,32);
         this.load.spritesheet('heart_flipped_animation', 'assets/heart_flipped_anim.png',32,32);
 
-        this.load.spritesheet('tumbleweed', 'assets/tumbleweed.png',48,48);
+        this.load.spritesheet('tumbleweed', 'assets/tumbleweed.png',96,96);
 
         this.load.image('bullet', 'assets/bullet.png');
 

@@ -381,7 +381,7 @@ Reflexerado.Game.prototype = {
         }
 
         var tumbleweed = this.add.sprite(startX, startY, 'tumbleweed');
-        tumbleweed.animations.add('run', Phaser.ArrayUtils.numberArray(0, 4), 10, true);
+        tumbleweed.animations.add('run', Phaser.ArrayUtils.numberArray(0, 3), 8, true);
 
         tumbleweed.play('run');
 
