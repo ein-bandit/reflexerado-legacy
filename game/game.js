@@ -192,17 +192,22 @@ Reflexerado.Game.prototype = {
         }, this);
     },
 
+    /**
+     * in debug animations are exclusively played for P1.
+     */
     initIntermediateAnimations: function () {
         // turn head every x seconds
         if (debug === true)
             console.log("init inter animation.");
 
-        for(var i = 1; i < this.interAnimation.times; i++) {
+        for (var i = 1; i < this.interAnimation.times + 1; i++) {
             this.time.events.add(Phaser.Timer.SECOND *
                 this.rnd.realInRange(this.interAnimation.minTime * i, this.interAnimation.maxTime * i), function () {
-                if (this.isFinished === false) {
-                    var player = "p" + Math.round(this.rnd.realInRange(1, 2));
+                var player = "p" + Math.round(this.rnd.realInRange(1, 2));
+
+                if (this.isFinished === false && this.views[player].animations.currentAnim.name !== "shoot") {
                     var anim = Math.round(this.rnd.realInRange(0, 2));
+
                     if (debug === true) {
                         player = "p1";
                         console.log("playing anim " + player + " : " + this.interAnimation.values[anim]);
@@ -276,10 +281,6 @@ Reflexerado.Game.prototype = {
 
         this.createScoreAnimations(this.round[winner].time, this.round[loser].time, winner, loser);
 
-        this.views[winner].animations.stop();
-        this.views[loser].animations.stop();
-
-
         //play winner animation and reduce life of loser
         this.time.events.add(Phaser.Timer.SECOND, function () {
             if (debug === true)
@@ -291,7 +292,7 @@ Reflexerado.Game.prototype = {
 
             this.time.events.add(Phaser.Timer.SECOND * 0.4, function () {
                 this.views[loser].animations.play('hit').onComplete.addOnce(function () {
-                    //this.views[loser].animations.stop();
+                    
                     if (this.lifes[loser].length > 1) {
                         this.loseLife(this.lifes[loser][0], loser);
                         this.startNewRound = true;
@@ -492,9 +493,7 @@ Reflexerado.Game.prototype = {
     finishGame: function (loser) {
         this.isFinished = true;
         this.resetRoundParameters();
-        this.views.p1.animations.is
-        //this.views.p1.animations.stop();
-        //this.views.p2.animations.stop();
+        
         if (this.debug === true)
             this.gameScore.destroy();
         var textp2;
