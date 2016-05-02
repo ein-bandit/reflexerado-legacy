@@ -205,18 +205,20 @@ Reflexerado.Game.prototype = {
                 this.rnd.realInRange(this.interAnimation.minTime * i, this.interAnimation.maxTime * i), function () {
                 var player = "p" + Math.round(this.rnd.realInRange(1, 2));
 
-                if (this.isFinished === false && this.views[player].animations.currentAnim.name !== "shoot") {
+                if (this.isFinished === false && this.lifes[player].length >= 1) {
                     var anim = Math.round(this.rnd.realInRange(0, 2));
 
                     if (debug === true) {
                         player = "p1";
                         console.log("playing anim " + player + " : " + this.interAnimation.values[anim]);
                     }
-                    this.views[player].animations.play(this.interAnimation.values[anim]).onComplete.addOnce(function () {
-                        if (this.isFinished === false) {
-                            this.views[player].animations.play('idle');
-                        }
-                    }, this);
+                    if (this.views[player].animations.currentAnim.name !== "hit") {
+                        this.views[player].animations.play(this.interAnimation.values[anim]).onComplete.addOnce(function () {
+                            if (this.isFinished === false) {
+                                this.views[player].animations.play('idle');
+                            }
+                        }, this);
+                    }
                 }
             }, this);
         }
@@ -292,7 +294,7 @@ Reflexerado.Game.prototype = {
 
             this.time.events.add(Phaser.Timer.SECOND * 0.4, function () {
                 this.views[loser].animations.play('hit').onComplete.addOnce(function () {
-                    
+
                     if (this.lifes[loser].length > 1) {
                         this.loseLife(this.lifes[loser][0], loser);
                         this.startNewRound = true;
@@ -493,7 +495,7 @@ Reflexerado.Game.prototype = {
     finishGame: function (loser) {
         this.isFinished = true;
         this.resetRoundParameters();
-        
+
         if (this.debug === true)
             this.gameScore.destroy();
         var textp2;
