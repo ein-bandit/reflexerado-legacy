@@ -36,7 +36,7 @@ Reflexerado.MainMenu.prototype = {
             this.controls = {
                 p1: {
                     left: Phaser.Keyboard.A,
-                    center: Phaser.Keyboard.TWO,
+                    center: 40,
                     right: Phaser.Keyboard.C
                 },
                 p2: {
