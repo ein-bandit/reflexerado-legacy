@@ -107,6 +107,7 @@ Reflexerado.MainMenu.prototype = {
 
     update: function () {
         if (this.playerOneReady === true && this.playerTwoReady === true) {
+            this.input.enabled = false;
             this.shoot.play();
             this.title_buttons.p1.animations.stop();
             this.title_buttons.p2.animations.stop();
