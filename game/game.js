@@ -31,6 +31,9 @@ Reflexerado.Game = function (game) {
     this.interAnimation;
 
     this.isFinished;
+
+    this.shake;
+    this.SHAKENUMBER;
 };
 
 var keycounter = 0;
@@ -89,12 +92,18 @@ Reflexerado.Game.prototype = {
         };
 
         this.isFinished = false;
+
+        this.shake = {
+            shakes: 0,
+            player: null
+        };
+        this.SHAKENUMBER = 20;
     },
 
     create: function () {
 
         if (debug === true) {
-            this.maxlifes = 2;
+            this.maxlifes = 5;
 
             this.minRoundTime = 2;
             this.maxRoundTime = 3;
@@ -132,6 +141,9 @@ Reflexerado.Game.prototype = {
     },
 
     update: function () {
+        if (this.shake.shakes > 0) {
+                this.shakeStuff();
+        }
         if (this.isFinished === false) {
             if (this.round.p1.done === true && this.round.p2.done === true) {
                 if (debug === true)
@@ -316,6 +328,13 @@ Reflexerado.Game.prototype = {
         this.bullet.position.x = pos.x + this.views[winner].width / 2;
         this.bullet.position.y = pos.y + this.views[winner].height / 3; // workaround for correct bullet starting point.
         this.sounds.shoot.play();
+
+        //add shake anim start here
+        this.shake.player = loser;
+        this.time.events.add(Phaser.Timer.SECOND * 0.5, function () {
+            this.shake.shakes = this.SHAKENUMBER;
+        }, this);
+
         this.time.events.add(Phaser.Timer.SECOND * 0.4, function () {
             this.time.events.add(Phaser.Timer.SECOND * 0.2, function () {
                 this.bullet.visible = true;
@@ -440,6 +459,31 @@ Reflexerado.Game.prototype = {
 
     },
 
+    shakeStuff: function () {
+        var player = this.shake.player;
+        var shaky = [this.buttons[player]];//, this.lifes[player]];
+        var rand1 = 0;
+
+        //select random
+        if (this.shake.shakes % 2 === 0) {
+            rand1 = -10;
+        } else {
+            rand1 = 10;
+        }
+
+        for (var i = 0; i < shaky.length; i++) {
+            for (var j = 0; j < shaky[i].length; j++) {
+                var obj = shaky[i][j];
+                obj.x += rand1;// rand2, obj.width + rand1, obj.height + rand2);
+            }
+
+        }
+        this.shake.shakes--;
+        if (this.shake.shakes == 0) {
+            this.resetButtons(this.shake.player);
+            this.shake.player = null;
+        }
+    },
 
     createAnimation: function (message, player, tweenEnabled) {
 
@@ -452,6 +496,8 @@ Reflexerado.Game.prototype = {
 
         if (message === Number.MAX_VALUE) {
             message = "miss!";
+        } else if (message !== "equal!") {
+            message += "ms";
         }
 
         //Create a new label for the score
@@ -498,27 +544,21 @@ Reflexerado.Game.prototype = {
 
         if (this.debug === true)
             this.gameScore.destroy();
+
+        var fontStyle = {
+            font: "36pt Western",
+            fill: "black"
+        };
+
         var textp2;
         var winnerText = "Lucky Luke is proud of you.";
         var loserText = "next match starts at noon...";
         if (loser === "p1") {
-            textp2 = this.add.text(this.world.centerX + 240, this.world.centerY - 25, winnerText, {
-                font: "36pt Western",
-                fill: "black"
-            });
-            this.add.text(this.world.centerX - 240, this.world.centerY + 25, loserText, {
-                font: "36pt Western",
-                fill: "black"
-            });
+            textp2 = this.add.text(this.world.centerX + 240, this.world.centerY - 25, winnerText, fontStyle);
+            this.add.text(this.world.centerX - 240, this.world.centerY + 25, loserText, fontStyle);
         } else {
-            this.add.text(this.world.centerX - 240, this.world.centerY + 25, winnerText, {
-                font: "36pt Western",
-                fill: "black"
-            });
-            textp2 = this.add.text(this.world.centerX + 240, this.world.centerY - 25, loserText, {
-                font: "36pt Western",
-                fill: "black"
-            });
+            this.add.text(this.world.centerX - 240, this.world.centerY + 25, winnerText, fontStyle);
+            textp2 = this.add.text(this.world.centerX + 240, this.world.centerY - 25, loserText, fontStyle);
         }
         textp2.scale.x *= -1;
         textp2.scale.y *= -1;
@@ -529,6 +569,16 @@ Reflexerado.Game.prototype = {
 
     },
 
+    //reset buttons x
+    resetButtons: function (player) {
+        this.buttons[player][0].x = this.world.centerX - 96;
+        this.buttons[player][1].x = 0;
+        this.buttons[player][1].x = this.world.centerX;
+        this.buttons[player][2].x = this.world.centerX + 96;
+
+        console.log("aaaa");
+        console.log(this.buttons[player][1].x);
+    },
 
     //init functions
     initButtons: function () {
@@ -557,7 +607,8 @@ Reflexerado.Game.prototype = {
             tempButtons[nein].scale.setTo(0.5);
             tempButtons[nein].enabled = false;
         }
-    },
+    }
+    ,
 
     initPlayerView: function () {
         //player animations
@@ -586,7 +637,8 @@ Reflexerado.Game.prototype = {
 
         if (debug === true)
             this.add.text(this.world.centerX + 96, 274, 'p2');
-    },
+    }
+    ,
 
     initGameObjects: function () {
         //bullet
@@ -614,4 +666,5 @@ Reflexerado.Game.prototype = {
         this.hearts.p2.visible = false;
         this.hearts.p2.anchor.set(0, 1);
     }
-};
+}
+;
