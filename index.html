@@ -15,7 +15,7 @@
             src: url(assets/font/old_pixel-7.ttf) format("truetype");
         }
     </style>
-    <title>Reflexerado</title>
+    <title>Revolverheld</title>
     <link rel="icon" type="image/png" href="assets/favicon.png"/>
 
 </head>
@@ -49,16 +49,18 @@
                 game.state.getCurrentState().playerOneReady = true;
                 game.state.getCurrentState().playerTwoReady = true;
                 this.style.display = "none";
-
             }, false);
+            this.document.getElementById("control-webmode").style.display = "block";
+            this.document.getElementById("sound").style.display = "block";
         }
     };
 </script>
 <div id="container" style="display:none">
-    <h1 id="start" style="font-family:Western; font-size: 40pt">Reflexerado&nbsp;</h1>
+    <h1 id="start" style="font-family:Western; font-size: 40pt">Revolverheld&nbsp;</h1>
 
-    <p style="font-size: 12pt; display: none">webmode: p1 (red): q,s (red),y - p2 (yellow): i,j (red),m</p>
+    <p id="control-webmode" style="font-size: 12pt; display: none">p1 (red): q,s (red),y - p2 (yellow): i,j (red),m</p>
     <p style="font-size: 12pt; display: none">p1 (red): a,2 (red),c - p2 (yellow): i,k (red),#</p>
+    <p id="sound" style="font-size: 12pt; display: block">mute sound: z</p>
 </div>
 
 

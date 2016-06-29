@@ -8,11 +8,14 @@ Reflexerado.MainMenu = function (game) {
 
     this.controls;
 
-    this.title_buttons;
+    this.buttons;
 };
 
 Reflexerado.MainMenu.prototype = {
     init: function () {
+        if (this.music) {
+            this.music.destroy();
+        }
         this.music = null;
         this.shoot = null;
         this.playerOneReady = false;
@@ -46,15 +49,10 @@ Reflexerado.MainMenu.prototype = {
                 }
             };
         }
-
-        this.title_buttons = {
-            p1: null,
-            p2: null
-        }
+        this.buttons = {p1: [], p2: []};
     },
 
     create: function () {
-
 
         if (!this.music) {
             this.music = this.add.audio('bg_audio');
@@ -69,39 +67,53 @@ Reflexerado.MainMenu.prototype = {
         this.titlescreen = this.add.image(this.world.centerX, this.world.centerY, 'titlescreen');
         this.titlescreen.anchor.setTo(0.5, 0.5);
 
-        this.title_buttons.p1 = this.add.sprite(this.world.width / 2 - 350, this.world.height / 7 * 6, 'title_buttons');
-        this.title_buttons.p1.animations.add('press');
-        this.title_buttons.p1.animations.play('press', 2, true);
 
-        this.title_buttons.p2 = this.add.sprite(this.world.width / 2 + 350, this.world.height / 7, 'title_buttons');
-        this.title_buttons.p2.scale.x *= -1;
-        this.title_buttons.p2.scale.y *= -1;
-        this.title_buttons.p2.animations.add('press');
-        this.title_buttons.p2.animations.play('press', 2, true);
+        this.buttons.p1.push(this.add.sprite(this.world.centerX - 96 - 32, this.world.height - 146, 'btns-blue'));
+        this.buttons.p1.push(this.add.sprite(this.world.centerX - 32, this.world.height - 274, 'btns-red'));
+        this.buttons.p1.push(this.add.sprite(this.world.centerX + 96 - 32, this.world.height - 146, 'btns-blue'));
+
+        this.buttons.p2.push(this.add.sprite(this.world.centerX - 96 + 32, 82, 'btns-blue'));
+        this.buttons.p2.push(this.add.sprite(this.world.centerX + 32, 210, 'btns-red'));
+        this.buttons.p2.push(this.add.sprite(this.world.centerX + 96 + 32, 82, 'btns-blue'));
+
+        for (var i = 0; i < this.buttons.p1.length; i++) {
+            this.buttons.p1[i].scale.setTo(0.5);
+
+        }
+        this.buttons.p1[1].animations.add('flash', Phaser.ArrayUtils.numberArray(0, 1), 2, true);
+        this.buttons.p1[1].animations.play('flash');
+
+        for (var j = 0; j < this.buttons.p2.length; j++) {
+            this.buttons.p2[j].scale.setTo(0.5);
+            this.buttons.p2[j].scale.x *= -1;
+            this.buttons.p2[j].scale.y *= -1;
+        }
+        this.buttons.p2[1].animations.add('flash', Phaser.ArrayUtils.numberArray(0, 1), 2, true);
+        this.buttons.p2[1].animations.play('flash');
 
 
         this.input.enabled = true;
         var p1 = this.input.keyboard.addKey(this.controls.p1.center);
         p1.onDown.add(function () {
+            this.buttons.p1[1].animations.stop();
+            this.buttons.p1[1].animations.frame = 2;
             this.playerOneReady = true;
-        }, this);
-        p1.onUp.add(function () {
-            this.playerOneReady = false;
         }, this);
         var p2 = this.input.keyboard.addKey(this.controls.p2.center);
         p2.onDown.add(function () {
+            this.buttons.p2[1].animations.stop();
+            this.buttons.p2[1].animations.frame = 2;
             this.playerTwoReady = true;
         }, this);
-        p2.onUp.add(function () {
-            this.playerTwoReady = false;
-        }, this);
-
         if (webmode === true) {
             this.input.keyboard.addKey(Phaser.Keyboard.Z).onDown.add(function () {
                 this.sound.mute = true;
             }, this);
         }
 
+        //hack for disabling webmode button
+        if (webmode === true)
+            document.getElementById("start").getElementsByTagName("button")[0].style.display = "initial";
 
     },
 
@@ -109,17 +121,27 @@ Reflexerado.MainMenu.prototype = {
         if (this.playerOneReady === true && this.playerTwoReady === true) {
             this.input.enabled = false;
             this.shoot.play();
-            this.title_buttons.p1.animations.stop();
-            this.title_buttons.p2.animations.stop();
+            this.buttons.p1[1].animations.stop();
+            this.buttons.p2[1].animations.stop();
             this.playerOneReady = false;
             this.playerTwoReady = false;
             this.titlescreen.visible = false;
             this.titlescreen = this.add.image(this.world.centerX, this.world.centerY, 'fakescreen');
             this.titlescreen.anchor.set(0.5, 0.5);
-            this.titlescreen.scale.set(1.429, 1.429);
+            //this.titlescreen.scale.set(0.5,0.5);
 
-            this.title_buttons.p1.visible = false;
-            this.title_buttons.p2.visible = false;
+
+            //destroy title screen buttons
+            var all = this.buttons.p1.concat(this.buttons.p2);
+            for (var i = 0; i < all.length; i++) {
+                all[i].visible = false;
+            }
+            //this.buttons.p1.visible = false;
+            //this.buttons.p2.visible = false;
+
+            //hack for webmode button
+            if (webmode === true)
+                document.getElementById("start").getElementsByTagName("button")[0].style.display = "none";
 
 
             this.time.events.add(Phaser.Timer.SECOND, function () {

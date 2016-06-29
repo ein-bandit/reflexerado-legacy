@@ -103,7 +103,7 @@ Reflexerado.Game.prototype = {
     create: function () {
 
         if (debug === true) {
-            this.maxlifes = 5;
+            this.maxlifes = 2;
 
             this.minRoundTime = 2;
             this.maxRoundTime = 3;
@@ -563,6 +563,8 @@ Reflexerado.Game.prototype = {
         textp2.scale.x *= -1;
         textp2.scale.y *= -1;
 
+        this.sound;
+
         this.time.events.add(Phaser.Timer.SECOND * 4, function () {
             this.state.start("MainMenu", true);
         }, this);
@@ -607,8 +609,7 @@ Reflexerado.Game.prototype = {
             tempButtons[nein].scale.setTo(0.5);
             tempButtons[nein].enabled = false;
         }
-    }
-    ,
+    },
 
     initPlayerView: function () {
         //player animations
