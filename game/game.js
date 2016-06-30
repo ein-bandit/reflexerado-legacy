@@ -563,8 +563,6 @@ Reflexerado.Game.prototype = {
         textp2.scale.x *= -1;
         textp2.scale.y *= -1;
 
-        this.sound;
-
         this.time.events.add(Phaser.Timer.SECOND * 4, function () {
             this.state.start("MainMenu", true);
         }, this);
