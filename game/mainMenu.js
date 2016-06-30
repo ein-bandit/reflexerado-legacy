@@ -13,7 +13,6 @@ Reflexerado.MainMenu = function (game) {
 
 Reflexerado.MainMenu.prototype = {
     init: function () {
-        console.log("inside init");
         if (this.music) {
             this.music.destroy();
         }
@@ -95,7 +94,7 @@ Reflexerado.MainMenu.prototype = {
             this.controls.p2.inputEnabled  = false;
 
             this.input.enabled = false;
-            
+
             this.shoot.play();
             this.buttons.p1[1].animations.stop();
             this.buttons.p2[1].animations.stop();
