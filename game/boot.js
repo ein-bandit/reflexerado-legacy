@@ -16,7 +16,7 @@ Reflexerado.Boot.prototype = {
 
     create: function () {
 
-        this.input.maxPointers = 1;
+        this.input.maxPointers = 2;
         // this.stage.disableVisibilityChange = true;
 
         this.state.start('Preloader');
