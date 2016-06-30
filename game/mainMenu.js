@@ -13,6 +13,7 @@ Reflexerado.MainMenu = function (game) {
 
 Reflexerado.MainMenu.prototype = {
     init: function () {
+        console.log("inside init");
         if (this.music) {
             this.music.destroy();
         }
@@ -21,39 +22,14 @@ Reflexerado.MainMenu.prototype = {
         this.playerOneReady = false;
         this.playerTwoReady = false;
 
-        //p2 has swapped controls on left/right.
-        if (webmode === true) {
-            this.controls = {
-                p1: {
-                    left: Phaser.Keyboard.Q,
-                    center: Phaser.Keyboard.S,
-                    right: Phaser.Keyboard.Y
-                },
-                p2: {
-                    left: Phaser.Keyboard.M,
-                    center: Phaser.Keyboard.J,
-                    right: Phaser.Keyboard.I
-                }
-            };
-        } else {
-            this.controls = {
-                p1: {
-                    left: Phaser.Keyboard.A,
-                    center: 40,
-                    right: Phaser.Keyboard.C
-                },
-                p2: {
-                    left: Phaser.Keyboard.I,
-                    center: Phaser.Keyboard.K,
-                    right: 191
-                }
-            };
-        }
+        this.controls = {
+            p1: null,
+            p2: null
+        };
         this.buttons = {p1: [], p2: []};
     },
 
     create: function () {
-
         if (!this.music) {
             this.music = this.add.audio('bg_audio');
             this.shoot = this.add.audio('shot');
@@ -66,7 +42,6 @@ Reflexerado.MainMenu.prototype = {
 
         this.titlescreen = this.add.image(this.world.centerX, this.world.centerY, 'titlescreen');
         this.titlescreen.anchor.setTo(0.5, 0.5);
-
 
         this.buttons.p1.push(this.add.sprite(this.world.centerX - 96 - 32, this.world.height - 146, 'btns-blue'));
         this.buttons.p1.push(this.add.sprite(this.world.centerX - 32, this.world.height - 274, 'btns-red'));
@@ -92,34 +67,35 @@ Reflexerado.MainMenu.prototype = {
         this.buttons.p2[1].animations.play('flash');
 
 
-        this.input.enabled = true;
-        var p1 = this.input.keyboard.addKey(this.controls.p1.center);
-        p1.onDown.add(function () {
+
+        this.controls.p1 = this.buttons.p1[1];
+
+        this.controls.p1.events.onInputDown.add(function () {
             this.buttons.p1[1].animations.stop();
             this.buttons.p1[1].animations.frame = 2;
             this.playerOneReady = true;
         }, this);
-        var p2 = this.input.keyboard.addKey(this.controls.p2.center);
-        p2.onDown.add(function () {
+
+        this.controls.p2 = this.buttons.p2[1];
+        this.controls.p2.events.onInputDown.add(function () {
             this.buttons.p2[1].animations.stop();
             this.buttons.p2[1].animations.frame = 2;
             this.playerTwoReady = true;
         }, this);
-        if (webmode === true) {
-            this.input.keyboard.addKey(Phaser.Keyboard.Z).onDown.add(function () {
-                this.sound.mute = true;
-            }, this);
-        }
 
-        //hack for disabling webmode button
-        if (webmode === true)
-            document.getElementById("start").getElementsByTagName("button")[0].style.display = "initial";
+        this.controls.p1.inputEnabled = true;
+        this.controls.p2.inputEnabled = true;
 
+        this.input.enabled = true;
     },
 
     update: function () {
         if (this.playerOneReady === true && this.playerTwoReady === true) {
+            this.controls.p1.inputEnabled  = false;
+            this.controls.p2.inputEnabled  = false;
+
             this.input.enabled = false;
+            
             this.shoot.play();
             this.buttons.p1[1].animations.stop();
             this.buttons.p2[1].animations.stop();
@@ -128,16 +104,12 @@ Reflexerado.MainMenu.prototype = {
             this.titlescreen.visible = false;
             this.titlescreen = this.add.image(this.world.centerX, this.world.centerY, 'fakescreen');
             this.titlescreen.anchor.set(0.5, 0.5);
-            //this.titlescreen.scale.set(0.5,0.5);
-
 
             //destroy title screen buttons
             var all = this.buttons.p1.concat(this.buttons.p2);
             for (var i = 0; i < all.length; i++) {
                 all[i].visible = false;
             }
-            //this.buttons.p1.visible = false;
-            //this.buttons.p2.visible = false;
 
             //hack for webmode button
             if (webmode === true)
@@ -151,7 +123,7 @@ Reflexerado.MainMenu.prototype = {
                         y: 50
                     }, 600, Phaser.Easing.Circular.In, true).onComplete.add(function () {
                     this.titlescreen.visible = false;
-                    this.state.start('Game', true, false, {controls: this.controls, mute: this.sound});
+                    this.state.start('Game', true, false);
                 }, this);
 
             }, this);

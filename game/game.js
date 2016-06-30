@@ -39,9 +39,8 @@ Reflexerado.Game = function (game) {
 var keycounter = 0;
 Reflexerado.Game.prototype = {
 
-    init: function (data) {
+    init: function () {
         this.input.enabled = false;
-        this.controls = data.controls;
         this.startNewRound = false;
         this.buttons = {p1: [], p2: []};
         this.inputs = {p1: [], p2: []};
@@ -78,7 +77,6 @@ Reflexerado.Game.prototype = {
             death: null
         };
         //overriding sound attribute
-        this.sound = data.mute;
         this.tumbleweed = {
             minTime: 25,
             maxTime: 50,
@@ -176,12 +174,7 @@ Reflexerado.Game.prototype = {
     },
 
     render: function () {
-        if (debug === true) {
-            if (this.gameScore) {
-                this.gameScore.destroy();
-            }
-            //this.gameScore = this.add.text(550, 500, 'lifes: ' + this.lifes.p1.length + ' : ' + this.lifes.p2.length, {font: "36pt Western"});
-        }
+        //do nothing
     },
 
     startRound: function () {
@@ -247,11 +240,14 @@ Reflexerado.Game.prototype = {
 
     //is called after every keypress of a player
 
-    evaluateInput: function (keyObj) {
+    evaluateInput: function (sprite, pointer) {
         if (debug === true)
+            console.log(sprite + " " + pointer);
             console.log("evaluationg keys " + keycounter++);
-        var p1_key = this.inputs.p1.indexOf(keyObj);
-        var p2_key = this.inputs.p2.indexOf(keyObj);
+
+        //get sprite
+        var p1_key = this.inputs.p1.indexOf(sprite);
+        var p2_key = this.inputs.p2.indexOf(sprite);
 
         if (p1_key > -1 && !this.playerOneLocked) {
             if (debug === true)
@@ -542,9 +538,6 @@ Reflexerado.Game.prototype = {
         this.isFinished = true;
         this.resetRoundParameters();
 
-        if (this.debug === true)
-            this.gameScore.destroy();
-
         var fontStyle = {
             font: "36pt Western",
             fill: "black"
@@ -575,9 +568,6 @@ Reflexerado.Game.prototype = {
         this.buttons[player][1].x = 0;
         this.buttons[player][1].x = this.world.centerX;
         this.buttons[player][2].x = this.world.centerX + 96;
-
-        console.log("aaaa");
-        console.log(this.buttons[player][1].x);
     },
 
     //init functions
@@ -591,18 +581,19 @@ Reflexerado.Game.prototype = {
         this.buttons.p2.push(this.add.sprite(this.world.centerX, 210, 'btns-red'));
         this.buttons.p2.push(this.add.sprite(this.world.centerX + 96, 82, 'btns-blue'));
 
-        this.inputs.p1 = [this.input.keyboard.addKey(this.controls.p1.left),
-            this.input.keyboard.addKey(this.controls.p1.center),
-            this.input.keyboard.addKey(this.controls.p1.right)];
-        this.inputs.p2 = [this.input.keyboard.addKey(this.controls.p2.right),
-            this.input.keyboard.addKey(this.controls.p2.center),
-            this.input.keyboard.addKey(this.controls.p2.left)];
+        this.inputs.p1 = [this.buttons.p1[0],
+            this.buttons.p1[1],
+            this.buttons.p1[2]];
+        this.inputs.p2 = [this.buttons.p2[0],
+            this.buttons.p2[1],
+            this.buttons.p2[2]];
 
         var tempInputs = this.inputs.p1.concat(this.inputs.p2);
-        var tempButtons = this.buttons.p1.concat(this.buttons.p2);
         for (var key in tempInputs) {
-            tempInputs[key].onDown.add(this.evaluateInput, this);
+            tempInputs[key].inputEnabled = true;
+            tempInputs[key].events.onInputDown.add(this.evaluateInput, this);
         }
+        var tempButtons = this.buttons.p1.concat(this.buttons.p2);
         for (var nein in tempButtons) {
             tempButtons[nein].scale.setTo(0.5);
             tempButtons[nein].enabled = false;
