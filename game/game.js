@@ -241,9 +241,6 @@ Reflexerado.Game.prototype = {
     //is called after every keypress of a player
 
     evaluateInput: function (sprite, pointer) {
-        if (debug === true)
-            console.log(sprite + " " + pointer);
-            console.log("evaluationg keys " + keycounter++);
 
         //get sprite
         var p1_key = this.inputs.p1.indexOf(sprite);
