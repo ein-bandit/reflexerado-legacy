@@ -1,6 +1,28 @@
-Reflexerado (aka Revolverhold)
+Reflexerado
+======
 
-this is the legacy project. 
-see the new project/unity port here. https://bitbucket.org/kaufi07/reflexerado/overview
+Originally created as Webgame for [Kuti Arcade Console](http://kuti-arcade.com/).
+Later on ported to Unity3D, but this is one is the true original.
 
-tihs project was initially built in HTML5 and Javascript with Phaser2D to target the "kuti"-platform (proprietary 2-player-box platform as haw games master project).
+Phaser2D Javascript Game Engine, Pixel-Art style. Thrilling minimalistic game mechanic.
+
+##Quick Fingers Required!
+
+One-on-one western duel at high noon. You don't need to bring anything else than quick reactions.
+
+The game is available [here](http://kaufi07.bplaced.net/reflexerado/).
+
+Pull the trigger faster than your opponent! 
+
+###Instructions
+Press/Click the flashing button first. That's it.
+Consider rotating your screen.
+
+##Controls
+
+Player One (lower side, red player)
+left button: Q; middle button: S; right button: Y;
+Player Two (upper side, yellow player)
+left button: M; middle button: J; right button: I;
+
+Z to mute. 
